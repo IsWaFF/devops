@@ -221,5 +221,128 @@ while True:
                     print('invelid chance')
             else:
                 print('value bigger than your balance')
+        elif username == 'Admin' and inp[0] == 'setmoney' and len(inp) == 3:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                profile = data[profileid]
+            for user in data:
+                if user['id'] == int(inp[2]):
+                    fount = True
+                    valid = True
+                else:
+                    if fount != True:
+                        probeid += 1
+                    None
+            if username != 'Admin' and probeid == 0:
+                print('user does not exists')
+            else:
+                tr_profile = data[probeid]
+                tr_profile['money'] = float(inp[1])
+                try:
+                    data[probeid] = tr_profile
+                    with open('database.json', 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
+                    print(f'sucsessful set.') 
+                except:
+                    print('internal error')
+
+        elif username == 'Admin' and inp[0] == 'addmoney' and len(inp) == 3:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                profile = data[profileid]
+            for user in data:
+                if user['id'] == int(inp[2]):
+                    fount = True
+                    valid = True
+                else:
+                    if fount != True:
+                        probeid += 1
+                    None
+            if username != 'Admin' and probeid == 0:
+                print('user does not exists')
+            else:
+                tr_profile = data[probeid]
+                tr_profile['money'] = tr_profile['money'] + float(inp[1])
+                try:
+                    data[probeid] = tr_profile
+                    with open('database.json', 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
+                    print(f'sucsessful adds.') 
+                except:
+                    print('internal error')
+
+
+        elif username == 'Admin' and inp[0] == 'rmuser' and len(inp) == 2:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                profile = data[profileid]
+            for user in data:
+                if user['id'] == int(inp[1]):
+                    fount = True
+                    valid = True
+                else:
+                    if fount != True:
+                        probeid += 1
+                    None
+            if username != 'Admin' and probeid == 0:
+                print('user does not exists')
+            else:
+                try:
+                    tr_profile = data[probeid]
+                    data[probeid] = tr_profile
+                    data.remove(tr_profile)
+                    with open('database.json', 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
+                    print(f'sucsessful delete.') 
+                except:
+                    print('internal error')
+                
+        elif username == 'Admin' and inp[0] == 'getinfo' and len(inp) == 2:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                profile = data[profileid]
+            for user in data:
+                if user['id'] == int(inp[1]):
+                    fount = True
+                    valid = True
+                else:
+                    if fount != True:
+                        probeid += 1
+                    None
+            if username != 'Admin' and probeid == 0:
+                print('user does not exists')
+            else:
+                try:
+                    tr_profile = data[probeid]
+                    print(f'''{tr_profile['user']} info:
+
+                    ID :        {tr_profile['id']}
+                    USERNAME :  {tr_profile['user']}
+                    MONEY :     {tr_profile['money']}
+                    ''')
+                except:
+                    print('user does not exists')
+
+        elif username == 'Admin' and inp[0] == 'getid' and len(inp) == 2:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                profile = data[profileid]
+            for user in data:
+                if user['user'] == inp[1]:
+                    fount = True
+                    valid = True
+                else:
+                    if fount != True:
+                        probeid += 1
+                    None
+            if username != 'Admin' and probeid == 0:
+                print('user does not exists')
+            else:
+                try:
+                    tr_profile = data[probeid]
+                    print(f'{tr_profile['user']} id: {tr_profile['id']}')
+                except:
+                    print('user does not exists')
+
         else:
             print('command not found')
