@@ -10,3 +10,6 @@ I discovered VIM.(vimtutor xD) and i will say that is really better than nano)).
 Oh im compleatly fogot to show my devops [roadmap](https://www.figma.com/board/JFWziGBMBWn7gq4EAV0ylj/%D0%A1%D1%82%D0%B0%D0%B6%D0%B5%D1%80?node-id=4-5194&t=nMQfbpC3BUqfNoR2-0) it fully on russion btw.
 
 I try to write a python database login/reg console. I think i get good result.
+Add some new commands.
+
+___week ended___
