@@ -8,3 +8,7 @@ I read about linux boot.[this one](https://wiki.archlinux.org/title/Arch_boot_pr
 and [this](https://wiki.gentoo.org/wiki/Initramfs/Guide/ru)
 
 Today 25 Nov. Today in plans read about linux file system.
+was read:
+https://timeweb.com/ru/community/articles/struktura-i-tipy-faylovyh-sistem-v-linux
+https://t.me/devops_prosto/78
+https://wiki.merionet.ru/articles/bazovaya-navigaciya-v-linux
