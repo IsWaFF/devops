@@ -7,3 +7,4 @@ Week plans:
 I read about linux boot.[this one](https://wiki.archlinux.org/title/Arch_boot_process)
 and [this](https://wiki.gentoo.org/wiki/Initramfs/Guide/ru)
 
+Today 25 Nov. Today in plans read about linux file system.
