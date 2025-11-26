@@ -12,3 +12,6 @@ was read:
 https://timeweb.com/ru/community/articles/struktura-i-tipy-faylovyh-sistem-v-linux
 https://t.me/devops_prosto/78
 https://wiki.merionet.ru/articles/bazovaya-navigaciya-v-linux
+
+Today 26 Nov.I Had a littlr quarel with historial teacher but its will not effect on my progress. Today i will read about rights and users in linux:
+
