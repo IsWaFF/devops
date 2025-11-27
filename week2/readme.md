@@ -15,3 +15,4 @@ https://wiki.merionet.ru/articles/bazovaya-navigaciya-v-linux
 
 Today 26 Nov.I Had a littlr quarel with historial teacher but its will not effect on my progress. Today i will read about rights and users in linux:
 
+27 Nov. Still compliting [this course](https://stepik.org/course/229493/syllabus). Mb today i setup dual boot because seems my arch can'n run gta 5. 
