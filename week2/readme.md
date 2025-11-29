@@ -17,3 +17,5 @@ Today 26 Nov.I Had a littlr quarel with historial teacher but its will not effec
 
 27 Nov. Still compliting [this course](https://stepik.org/course/229493/syllabus). Mb today i setup dual boot because seems my arch can't run gta 5. 
 evning update: still compliting course. 52% completed
+
+29 Nov. No commits yesterday because i got a little ill. I will try to catch up today
