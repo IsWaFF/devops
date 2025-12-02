@@ -6,3 +6,6 @@ Today i read [this](https://gitverse.ru/blog/articles/development/406-processy-i
 Sometimes i thinking about learning C/C++.
 
 I also delete Ubuntu and install fedora. I cant say that I really like it.
+
+## 2 Dec.
+I read about ps, top, htop, systemctl and kill.
