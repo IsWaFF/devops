@@ -17,4 +17,4 @@ I read smthig about LA. Install archcraft. its so slowww..
 hard day. read about bash. installed arch on pc.[rice](https://github.com/sansroot/hypr-dots/tree/lavender?tab=readme-ov-file). It took me like 2 hours 
 
 ## 5 dec.
-writed some bash scripts but fogot to upload they here because fall asleap.
+writed some bash scripts but fogot to upload they here because fall asleap. Added.
