@@ -19,5 +19,5 @@ hard day. read about bash. installed arch on pc.[rice](https://github.com/sansro
 ## 5 dec.
 writed some bash scripts but fogot to upload they here because fall asleap. Added.
 
-## 7 dec
+## 7 dec.
 I have a little break from this.    Everyday it's been more complicated to keep up the pace.
