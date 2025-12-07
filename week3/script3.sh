@@ -6,4 +6,7 @@ if [ "$1" = "new" ]; then
   echo "$filetext" > "$filename"
 elif [ "$1" = "append" ]; then
   echo "$filetext" >> "$filename"
+else
+  echo "error"
 fi
+echo "success"
