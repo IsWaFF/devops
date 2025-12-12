@@ -4,3 +4,6 @@ new week. I have in plans finishing lunix branch in this week. studied some more
 	
 ## 11 Dec.
 read more about pipes. Also i have trouble whis my free time.
+
+## 12 Dec.
+read about net tools like:ping, curl, etc.and nets.
