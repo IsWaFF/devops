@@ -8,3 +8,6 @@ Also today began to learn git branch.
 
 ## 18 Dec.
 Today I was reading about git branches
+
+## 19 Dec.
+I reading about git merge
