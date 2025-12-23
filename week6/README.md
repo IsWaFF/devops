@@ -4,3 +4,6 @@ feeling great
 gitflow easier that it looks like. I completed git granch and i feel confident about it.
 starting net branch, looks hard.
 commiting from school pc btw). read about OSL
+
+## 23 Dec.
+study nets
