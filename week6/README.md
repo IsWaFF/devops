@@ -7,3 +7,6 @@ commiting from school pc btw). read about OSL
 
 ## 23 Dec.
 study nets
+
+## 24 dec
+nets are complicated 
