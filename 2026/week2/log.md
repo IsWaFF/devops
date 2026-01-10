@@ -6,3 +6,6 @@ discover cisco pacet traser. Very interesting programm. And also memorized OSI m
 
 ## 8 january
 read second post of network for the little ones.
+
+## 10 january
+reviewing nets
