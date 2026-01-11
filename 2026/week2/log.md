@@ -9,3 +9,5 @@ read second post of network for the little ones.
 
 ## 10 january
 reviewing nets
+## 11 january
+nets
