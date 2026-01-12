@@ -5,9 +5,12 @@ Today i understood one of my life goals. For this i need influens and money. I a
 discover cisco pacet traser. Very interesting programm. And also memorized OSI model.
 
 ## 8 january
-read second post of network for the little ones.
+read first post of network for the little ones.
 
 ## 10 january
 reviewing nets
 ## 11 january
 nets
+
+## 12 january
+read second post of network for the little ones.
