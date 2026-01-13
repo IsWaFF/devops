@@ -14,3 +14,6 @@ nets
 
 ## 12 january
 read second post of network for the little ones.
+
+## 13 january
+practice second post of network for the little ones.
