@@ -26,3 +26,6 @@ fall ill with temperature 39. but still read about nets
 
 ## 17 January 
 fully configured interVlan Routing. still ill. Fells a litlle sleepy.
+
+## 18 January 
+Building nets
