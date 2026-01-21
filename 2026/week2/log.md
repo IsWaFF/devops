@@ -29,3 +29,7 @@ fully configured interVlan Routing. still ill. Fells a litlle sleepy.
 
 ## 18 January 
 Building nets
+
+
+## 21 January 
+nets, linux
