@@ -8,6 +8,10 @@ nets, linux
 weeks fix. trying to setup CPT on linux. harder than it looks like.
 
 
-#23 Jan
+# 23 January
 
 finishing fourth chapter of NFB.
+
+# 25 January 
+
+starting fifth part
