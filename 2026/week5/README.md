@@ -8,3 +8,7 @@ nets,NAT etc.
 
 on part six nftb. It was good if mentor mentiod that SPT has clusters systems!
 
+## January 28
+
+small day. create cluster system.
+
