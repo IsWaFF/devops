@@ -12,3 +12,7 @@ on part six nftb. It was good if mentor mentiod that SPT has clusters systems!
 
 small day. create cluster system.
 
+## January 29
+
+practice OSPF
+
