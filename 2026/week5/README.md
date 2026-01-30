@@ -16,3 +16,6 @@ small day. create cluster system.
 
 practice OSPF
 
+# Jaunuary 30
+
+reading more about dynamic routing
