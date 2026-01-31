@@ -19,3 +19,7 @@ practice OSPF
 # Jaunuary 30
 
 reading more about dynamic routing
+
+# Jaunuary 31
+
+i think im fineshed 6 vid of course despite that i not fully completed practice, my netplan has some issues that im dk how to fix. In future i will try myself more on dynamic routing, i promise!
