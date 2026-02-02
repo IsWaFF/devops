@@ -2,4 +2,4 @@
 
 # febrary 2
 
-docker!
+docker is cool! Today i discovered too mutch.
