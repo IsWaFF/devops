@@ -1,0 +1,43 @@
+services:
+  backend:
+    image: shadow_backend
+    build:
+      context: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+    ports:
+      - "5000:5000"
+  frontend:
+    image: shadow_frontend
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5000
+    depends_on:
+      - backend
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+
+volumes:
+  db-data:
