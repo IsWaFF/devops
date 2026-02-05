@@ -12,3 +12,7 @@ Vibe coded some htmls
 ## febrary 4
 
 going deeper on docker, docker copmose. starting use obsidian, it seems like its good app.
+
+## feb 5
+
+transfer my knowledge into obsidian 
