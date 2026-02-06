@@ -16,3 +16,12 @@ going deeper on docker, docker copmose. starting use obsidian, it seems like its
 ## feb 5
 
 transfer my knowledge into obsidian 
+
+## feb 6
+
+summarize my docker knowlage.
+
+**Docker** finished!
+
+***Starting DB***
+
