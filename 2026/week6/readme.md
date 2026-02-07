@@ -25,3 +25,6 @@ summarize my docker knowlage.
 
 ***Starting DB***
 
+## feb 7
+
+SQL is a little bit boring🫠
