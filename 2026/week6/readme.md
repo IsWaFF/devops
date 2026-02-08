@@ -28,3 +28,7 @@ summarize my docker knowlage.
 ## feb 7
 
 SQL is a little bit boring🫠
+
+## feb 8
+
+lazy day, SQL
