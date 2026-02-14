@@ -8,3 +8,7 @@ finished db block.
 
 ## 12 feb
 🐍 python 
+
+## 14 feb
+
+python

@@ -1,0 +1,7 @@
+2026-02-14 10:00:01 INFO [192.168.1.1] User login successful
+2026-02-14 10:05:23 ERROR [10.0.0.5] Database connection failed: timeout after 30s
+2026-02-14 10:07:12 WARNING [172.16.0.42] High CPU usage detected: 92%
+2026-02-14 10:10:45 INFO [192.168.1.10] Request processed in 120ms (Status: 200)
+2026-02-14 10:12:00 ERROR [192.168.1.1] 404 Not Found: /api/v1/resource
+broken line without date or status
+2026-02-14 10:15:30 INFO [10.0.0.5] User logout

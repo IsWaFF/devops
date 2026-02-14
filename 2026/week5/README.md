@@ -27,5 +27,5 @@ i think im fineshed 6 vid of course despite that i not fully completed practice,
 # February 1
 
 nets summary 
-I think that nets are finished for me now. And u can congratulate me that i finaly finished first sector of roadmap, it was long journey, but I have to do so much more. 
+nets are finished for me now. And u can congratulate me that i finaly finished first sector of roadmap, it was long journey, but I have to do so much more. 
 
