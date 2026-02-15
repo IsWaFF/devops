@@ -12,3 +12,7 @@ finished db block.
 ## 14 feb
 
 python
+
+## 15 feb
+
+CI/CD
