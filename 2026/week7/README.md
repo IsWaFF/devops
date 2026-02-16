@@ -16,3 +16,8 @@ python
 ## 15 feb
 
 CI/CD
+
+## 16 feb
+
+created some repos to test github actions and Jenkins 
+_https://github.com/IsWaFF/landingCI_CD-test_
