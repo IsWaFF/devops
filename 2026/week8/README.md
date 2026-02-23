@@ -1,6 +1,13 @@
 # WEEK 8
 
-### 23 FEB
+## 18 feb
 
-vm managing
-setup gitlab server
+monitoring
+
+## 19 feb
+
+grafana, Prometheus, gitlab ci/cd
+
+## 21 feb
+
+gitlab ci/cd
