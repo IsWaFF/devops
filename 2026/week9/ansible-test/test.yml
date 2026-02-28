@@ -1,0 +1,16 @@
+---
+- hosts: web_servers
+  become: yes
+  tasks:
+
+  - name: 'system update'
+    ansible.builtin.apt:
+          update_cache: yes
+          upgrade: dist
+
+  - name: "Install nginx via apt"
+    ansible.builtin.apt:
+      name: "nginx"
+      state: "latest"
+      update_cache: true
+...
