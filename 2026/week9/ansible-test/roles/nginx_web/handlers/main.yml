@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: "Restart Nginx"
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+# handlers file for roles/nginx_web

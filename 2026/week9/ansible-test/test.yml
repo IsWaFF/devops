@@ -2,15 +2,24 @@
 - hosts: web_servers
   become: yes
   tasks:
+    - name: 'system update'
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
 
-  - name: 'system update'
-    ansible.builtin.apt:
-          update_cache: yes
-          upgrade: dist
+    - name: "Install nginx"
+      ansible.builtin.apt:
+        name: "nginx"
+        state: latest
 
-  - name: "Install nginx via apt"
-    ansible.builtin.apt:
-      name: "nginx"
-      state: "latest"
-      update_cache: true
-...
+    - name: "Создаем кастомную страницу из шаблона"
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+      notify: "Restart Nginx" # Если файл изменится, сработает хендлер
+
+  handlers:
+    - name: "Restart Nginx"
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

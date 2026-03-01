@@ -1,0 +1,59 @@
+#SPDX-License-Identifier: MIT-0
+---
+
+    - name: Show facts available on the system
+      ansible.builtin.debug:
+        var: ansible_facts
+
+    - name: 'system update'
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: "Install nginx"
+      ansible.builtin.apt:
+        name: "nginx"
+        state: latest
+
+    - name: "Установка инструментов разработчика"
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - htop
+        - curl
+        - git
+        - tmux
+
+    - name: "Создаем кастомную страницу из шаблона"
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+      notify: "Restart Nginx" # Если файл изменится, сработает хендлер
+
+
+    - name: 'folders'
+      ansible.builtin.file:
+        path: /tmp/testdir
+        state: directory
+        mode: '0755'
+
+    - name: 'Touch a file'
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: touch
+        mode: u=rwx,g=rx,o=r
+      loop:
+        - /tmp/testdir/file1.txt
+        - /tmp/testdir/file2.yml
+        - /tmp/testdir/file3.py
+
+    - name: 'install repo'
+      ansible.builtin.git:
+        repo: 'https://github.com/IsWaFF/devops'
+        dest: /home/waff/github
+      when: 
+        - ansible_memtotal_mb > 1024
+        - (ansible_mounts | selectattr('mount', 'equalto', '/') | first).size_available > 1024**3
+
+# tasks file for roles/nginx_web
