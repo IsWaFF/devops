@@ -7,4 +7,8 @@ k8s
 
 ### 4 mar
 
-minikube theory/some practice
+minikube theory
+
+### 5 mar
+
+some practice
