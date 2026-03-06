@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+spec: # Спецификация Деплоймента
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template: # Шаблон Пода
+    metadata:
+      labels:
+        app: nginx
+    spec: # Спецификация Пода
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html # Куда Nginx кладет файлы по умолчанию
+      volumes: # На одном уровне с containers!
+      - name: html-volume
+        configMap:
+          name: nginx-config

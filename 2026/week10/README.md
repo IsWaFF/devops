@@ -12,3 +12,7 @@ minikube theory
 ### 5 mar
 
 some practice
+
+### 6 mar
+
+2

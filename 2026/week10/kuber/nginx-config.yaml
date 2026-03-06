@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  data:
+  index.html: |
+    <html>
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <h1>Привет, я учусь Куберу!</h1>
+      </body>
+    </html>
