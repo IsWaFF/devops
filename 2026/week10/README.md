@@ -16,3 +16,7 @@ some practice
 ### 6 mar
 
 2
+
+### 7 MAR
+
+k8s full stack practice

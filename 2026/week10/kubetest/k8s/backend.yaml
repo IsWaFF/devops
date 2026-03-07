@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: guestbook-api
+  template:
+    metadata:
+      labels:
+        app: guestbook-api
+    spec:
+      # ВОТ ОН - BEST PRACTICE ОЖИДАНИЯ
+      initContainers:
+      - name: wait-for-db
+        image: postgres:15-alpine
+        command: 
+          - 'sh'
+          - '-c'
+          - 'until pg_isready -h postgres-service -p 5432; do echo "Ждем базу..."; sleep 2; done;'
+      
+      # Основной контейнер запустится только после успешного завершения initContainer
+      containers:
+      - name: api
+        image: guestbook-api:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: postgres-service
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_DB
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-api-service
+spec:
+  type: NodePort
+  selector:
+    app: guestbook-api
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30050

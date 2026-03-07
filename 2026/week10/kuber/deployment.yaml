@@ -6,6 +6,7 @@ spec: # Спецификация Деплоймента
   replicas: 1
   selector:
     matchLabels:
+    
       app: nginx
   template: # Шаблон Пода
     metadata:
