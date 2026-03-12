@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }} # Динамические реплики
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-backend
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: postgres:15-alpine
+        command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-db-service -p 5432; do sleep 2; done;']
+      containers:
+      - name: api
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}" # Тег из values
+        resources:
+          {{- toYaml .Values.backend.resources | nindent 10 }} # Лимиты ресурсов
+        env:
+        - name: DB_HOST
+          value: {{ .Release.Name }}-db-service
+        - name: DB_USER # Как называется переменная в Python
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-secret
+              key: POSTGRES_USER # Какой ключ взять из Secret
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-secret
+              key: POSTGRES_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-secret
+              key: POSTGRES_DB

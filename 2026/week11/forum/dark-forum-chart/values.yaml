@@ -1,0 +1,19 @@
+backend:
+  replicaCount: 1
+  image:
+    repository: dark-forum
+    tag: v1 # Тот самый image tag из роадмапа
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+ingress:
+  enabled: true
+  host: dark-forum.local # Ingress host из роадмапа
+
+database:
+  storage: 1Gi

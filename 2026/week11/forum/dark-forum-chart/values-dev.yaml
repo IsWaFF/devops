@@ -1,0 +1,6 @@
+backend:
+  replicaCount: 1 # На деве нам хватит одного пода
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi

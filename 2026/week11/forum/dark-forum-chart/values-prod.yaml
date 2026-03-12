@@ -1,0 +1,6 @@
+backend:
+  replicaCount: 3 # На проде хотим отказоустойчивость
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
