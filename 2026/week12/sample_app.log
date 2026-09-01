@@ -1,0 +1,11 @@
+2026-09-01 10:00:01 192.168.1.10 GET /api/v1/users 200 INFO User list retrieved
+2026-09-01 10:00:05 192.168.1.15 POST /api/v1/login 401 ERROR Invalid password attempt
+2026-09-01 10:00:12 192.168.1.15 POST /api/v1/login 401 ERROR Invalid password attempt
+2026-09-01 10:00:18 10.0.0.45 GET /static/app.css 200 INFO Loaded app CSS
+2026-09-01 10:01:02 192.168.1.15 POST /api/v1/login 403 ERROR IP rate limit exceeded
+2026-09-01 10:01:45 172.16.0.22 GET /api/v1/dashboard 500 ERROR Database connection timeout
+2026-09-01 10:02:10 192.168.1.50 GET /health 200 INFO Health check OK
+2026-09-01 10:03:00 172.16.0.22 GET /api/v1/reports 504 ERROR Gateway timeout
+2026-09-01 10:04:15 10.0.0.45 GET /api/v1/settings 200 INFO Settings fetched
+2026-09-01 10:05:01 192.168.1.99 POST /api/v1/upload 413 WARN File size exceeds recommended limit
+2026-09-01 10:05:22 172.16.0.22 GET /api/v1/reports 500 ERROR Database connection timeout
