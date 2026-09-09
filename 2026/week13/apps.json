@@ -1,0 +1,10 @@
+[
+    {
+        "name": "frontend",
+        "status": "failed"
+    },
+    {
+        "name": "backend",
+        "status": "running"
+    }
+]
