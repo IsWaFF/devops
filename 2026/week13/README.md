@@ -7,3 +7,5 @@
 ## 9 september
     sadservers
     bought sadservers pro+
+## 10 september 
+    sadservers sloving
