@@ -9,3 +9,5 @@
     bought sadservers pro+
 ## 10 september 
     sadservers sloving
+## 11 september
+    sadservers.. sloving some labs with postgresql
