@@ -11,3 +11,5 @@
     sadservers sloving
 ## 11 september
     sadservers.. sloving some labs with postgresql
+## 12 september
+    thinking about changing distro and windows manager. nixos is not for me...
