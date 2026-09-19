@@ -30,3 +30,7 @@ it was working on ["Alexandria": The Vanishing Backups](https://sadservers.com/s
 - `sudo crontab -e` - to edit this
 
 my main problem in this scenario was that i not mentiod that in crontab was old script. and next i need to remove .lock file.
+
+## 19 september
+
+Docker review
