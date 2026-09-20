@@ -34,3 +34,30 @@ my main problem in this scenario was that i not mentiod that in crontab was old 
 ## 19 september
 
 Docker review
+
+## 20 september
+
+completed ["Rio de Janeiro": Do we have another option?](https://sadservers.com/scenario/rio) in a first try !
+
+**key fixes and commands:**
+
+- sudo systemctl start jenkins
+- sudo systemctl status jenkins.service
+- sudo journalctl -u jenkins -n 50 --no-pager
+- sudo systemctl enable jenkins.service
+- sudo apt update
+- ls /usr/lib/jvm
+- java -version
+
+problem was incorrect java version
+
+__answer:__
+
+- sudo apt install temurin-11-jdk
+- sudo update-alternatives --config java
+
+how to see where jenkins java:
+
+- systemctl cat jenkins
+- readlink -f /usr/bin/java
+- update-alternatives --display java
