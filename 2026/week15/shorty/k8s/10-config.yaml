@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: configmap
+metadata:
+  name: web
+  namespace: shorty
+spec:
+  data:
+    LOG_LEVEL: "info"
+    WEB_CONCURRENCY: "2"
+    DB_HOST: "postgres"
+  envFrom:
+    - configMapRef:
+      name: web-config
