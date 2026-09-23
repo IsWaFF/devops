@@ -87,3 +87,95 @@ k8s practice
 **Short names** save typing: `po` = pods, `svc` = services, `deploy` = deployments, `cm` = configmaps, `ns` = namespaces, `pvc` = persistentvolumeclaims, `sts` = statefulsets.
 
 When something breaks, go in this order: `get pods` → `describe pod` (Events) → `logs` / `logs --previous`.
+
+## 23 september
+
+completed ["Cairo": Time for a Timer](https://sadservers.com/scenario/cairo) on a second try, 11:52, 0 clues
+
+**key fixes and commands:**
+
+- cat /opt/scripts/health.sh
+- cat /var/log/health.log
+- sudo ss -tlnp
+- curl -s --max-time 2 http://localhost
+- sudo iptables -L -n -v --line-numbers
+
+problem was iptables rule in OUTPUT that drops everything to 127.0.0.1:80, so curl just hangs. and health.timer was not enabled
+
+__answer:__
+
+- sudo iptables -D OUTPUT 1
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now health.timer
+
+checker didn't need it, but on a real server also:
+
+- sudo ip6tables -L -n -v (same rule for ipv6)
+- sudo netfilter-persistent save (or rule comes back after reboot)
+- AccuracySec=1s in timer (default lets it be late up to 1 min)
+
+curl hangs = packets dropped somewhere. fast 404/500 = server answered
+
+### systemd timer vs cron
+
+main difference: timer is a systemd unit, so you need 2 files, .service (what to run) and .timer (when to run). you get systemctl status and journalctl -u. cron is one line
+
+/etc/systemd/system/backup.service
+
+```ini
+[Unit]
+Description=Backup job
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backup.sh
+```
+
+/etc/systemd/system/backup.timer
+
+```ini
+[Unit]
+Description=Run backup daily
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+enable:
+
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now backup.timer (enable .timer, not .service)
+- systemctl list-timers
+
+same in cron:
+
+- 0 3 * * * /usr/local/bin/backup.sh
+
+### iptables
+
+rules are in chains:
+
+- INPUT - packets coming to the server
+- OUTPUT - packets server sends, also to itself (curl localhost)
+- FORWARD - packets going through (docker)
+
+rules go top to bottom, first match wins, if nothing matched then chain policy. pkts column = how many packets hit the rule, if it grows when you curl thats your rule. DOCKER-* chains are docker stuff, skip them
+
+- ACCEPT - let through
+- DROP - throw away silently, client hangs
+- REJECT - refuse, client gets error fast
+
+commands:
+
+- sudo iptables -L -n -v --line-numbers - list rules with counters and numbers
+- sudo iptables -S - rules as commands
+- sudo iptables -t nat -L -n -v - nat table
+- sudo iptables -D OUTPUT 1 - delete rule 1 in OUTPUT
+- sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT - add rule to the end
+- sudo iptables -I INPUT 1 ... - add rule to the top
+- sudo ip6tables -L -n -v - same for ipv6
+- sudo netfilter-persistent save - save rules, rules file is /etc/iptables/rules.v4
