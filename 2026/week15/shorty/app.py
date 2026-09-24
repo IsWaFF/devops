@@ -5,8 +5,11 @@ import signal
 import socket
 import sys
 
+# pyrefly: ignore [missing-import]
 import psycopg
+# pyrefly: ignore [missing-import]
 from flask import Flask, abort, redirect, render_template, request
+# pyrefly: ignore [missing-import]
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")

@@ -35,7 +35,7 @@ k8s practice
 | `kubectl describe pod <name>` | Full info about a pod. Read **Events** at the bottom first. |
 | `kubectl logs <pod>` | Show what the app printed. |
 | `kubectl logs <pod> --previous` | Logs of the container that crashed before. Use it for CrashLoopBackOff. |
-| `kubectl logs -f deploy/web` | Follow logs live from a deployment. |
+| `kubectl logs -f deploy podname` | Follow logs live from a deployment. |
 | `kubectl get events --sort-by=.lastTimestamp` | Recent events in the namespace, newest last. |
 | `kubectl exec -it <pod> -- sh` | Open a shell inside a pod. |
 
@@ -54,17 +54,17 @@ k8s practice
 
 | command | what it does |
 |---|---|
-| `kubectl scale deploy/web --replicas=3` | Change how many copies run. |
-| `kubectl rollout status deploy/web` | Wait and show if the update finished. |
-| `kubectl rollout restart deploy/web` | Restart all pods one by one, for example after you change a ConfigMap. |
-| `kubectl rollout history deploy/web` | Show old versions. |
-| `kubectl rollout undo deploy/web` | Go back to the previous version. |
+| `kubectl scale deploy podname --replicas=3` | Change how many copies run. |
+| `kubectl rollout status deploy podname` | Wait and show if the update finished. |
+| `kubectl rollout restart deploy podname` | Restart all pods one by one, for example after you change a ConfigMap. |
+| `kubectl rollout history deploy podname` | Show old versions. |
+| `kubectl rollout undo deploy podname` | Go back to the previous version. |
 
 ### kubectl: get to your app from the laptop
 
 | command | what it does |
 |---|---|
-| `kubectl port-forward svc/web 8080:80` | Open localhost:8080 and send it to the service. Works while the terminal is open. |
+| `kubectl port-forward svc podname 8080:80` | Open localhost:8080 and send it to the service. Works while the terminal is open. |
 | `kubectl port-forward pod/<name> 8000` | Same, but to one pod. |
 
 ### kubectl: namespace and context
@@ -80,8 +80,8 @@ k8s practice
 | command | what it does |
 |---|---|
 | `kubectl explain deployment.spec` | Show what fields go here and what they mean. |
-| `kubectl create deployment web --image=x --dry-run=client -o yaml` | Print a starter YAML. Creates nothing. |
-| `kubectl get deploy web -o yaml` | Show the full YAML of something that already runs. |
+| `kubectl create deployment podname --image=x --dry-run=client -o yaml` | Print a starter YAML. Creates nothing. |
+| `kubectl get deploy podname -o yaml` | Show the full YAML of something that already runs. |
 | `kubectl <command> --help` | Help and examples for any command. |
 
 **Short names** save typing: `po` = pods, `svc` = services, `deploy` = deployments, `cm` = configmaps, `ns` = namespaces, `pvc` = persistentvolumeclaims, `sts` = statefulsets.
@@ -179,3 +179,17 @@ commands:
 - sudo iptables -I INPUT 1 ... - add rule to the top
 - sudo ip6tables -L -n -v - same for ipv6
 - sudo netfilter-persistent save - save rules, rules file is /etc/iptables/rules.v4
+
+## 24 september
+
+started my vibecoded kuber challange. **DAY 1**
+
+ __new for me:__
+
+- kubectl run podname --image=nginx:1.30-alpine - run pod
+- kubectl describe pod podname - see pod card, actions
+- kubectl logs podname - see logs
+- kubectl exec -it podname -- sh  -  to enter into the pod
+- kubectl port-forward pod/podname 8080:80 - to forward port to local machine
+- kubectl delete pod podname - __**not foget!!**__
+
