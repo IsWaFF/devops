@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: one
+  name: one
+spec:
+  containers:
+    - image: nginx:1.30-alpine
+      name: one
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: two
+  name: two
+spec:
+  containers:
+    - image: nginx:1.30-alpine
+      name: two

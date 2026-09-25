@@ -1,0 +1,12 @@
+apiVersion: v1              # 1. which API version this kind belongs to
+kind: Pod                   # 2. what type of object
+metadata:                   # 3. who is it: name, labels, ...
+  name: web
+  labels:
+    app: web
+spec:                       # 4. what I want (different for every kind)
+  containers:
+    - name: nginx
+      image: nginx:1.30-alpine
+      ports:
+        - containerPort: 80

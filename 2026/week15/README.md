@@ -193,3 +193,13 @@ started my vibecoded kuber challange. **DAY 1**
 - kubectl port-forward pod/podname 8080:80 - to forward port to local machine
 - kubectl delete pod podname - __**not foget!!**__
 
+## 25 september
+
+day 2 of challange. todays topic was YAML. 
+
+**main commands:**
+- kubectl apply -f k8s/manifest.yaml
+- kubectl api-resources - to get ApiVersion filed
+- kubectl diff -f
+- kubectl run gen --image=image --dry-run=client -o yaml - to get tempplate of pod yaml
+- kubectl explain <>.<>.<>

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: gen
+    color: blue
+  name: gen
+spec:
+  containers:
+    - image: nginx:1.30-alpine
+      name: gen
