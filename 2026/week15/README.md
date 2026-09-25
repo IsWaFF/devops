@@ -203,3 +203,44 @@ day 2 of challange. todays topic was YAML.
 - kubectl diff -f
 - kubectl run gen --image=image --dry-run=client -o yaml - to get tempplate of pod yaml
 - kubectl explain <>.<>.<>
+
+completed ["Bergen": Port already in use](https://sadservers.com/scenario/bergen), ~30 min, 0 clues. check.sh said OK, but i closed the scenario tab and couldn't press Check on the site. next time keep that tab open until check
+
+**key fixes and commands:**
+
+- /home/admin/standalone - listen tcp4 0.0.0.0:8000: bind: address already in use
+- sudo ss -ltnp 'sport = :8000' - who listens on the port
+- sudo lsof -i :8000 - same
+- curl localhost:8000 - "hello SadServers", same thing port 80 must show
+- sudo systemctl status django.service
+- grep -rn proxy_pass /etc/nginx/
+
+problem was django dev server (django.service) sitting on 8000, the same port standalone wants. and nginx on 80 is a reverse proxy to django on 8000, so you can't just kill django or web on 80 dies
+
+__answer:__
+
+- sudo nano /etc/systemd/system/django.service - runserver 0.0.0.0:8000 -> 0.0.0.0:8001
+- sudo systemctl daemon-reload
+- sudo systemctl restart django
+- sudo nano +7 /etc/nginx/sites-available/bergen - proxy_pass http://127.0.0.1:8001;
+- sudo nginx -t && sudo systemctl reload nginx
+- curl localhost - hello SadServers
+- ./standalone - OK
+
+my mistakes:
+
+- checked iptables, but error said port is used, not blocked. read the error first
+- moved django to port 80 -> it crashed (nginx is already there) and nginx gave 502
+- disable/kill/enable dance, daemon-reload + restart is enough
+
+502 Bad Gateway = nginx is alive, but the app behind it doesn't answer
+
+### nginx: sites-available vs sites-enabled
+
+- sites-available/ - all site configs, also turned off ones
+- sites-enabled/ - symlinks to the ones that work, nginx reads only these
+- ls -l /etc/nginx/sites-enabled/ - see what is on
+- edit file in sites-available, symlink sees the changes
+- grep -r doesn't follow symlinks, grep -R does
+
+reverse proxy (proxy_pass) is not redirect. redirect = 301/302, browser goes to new url itself. proxy = nginx goes to the app and gives answer back to client
