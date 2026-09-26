@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exit3
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: exit3
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          sleep 2
+          exit 3

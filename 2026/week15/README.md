@@ -244,3 +244,28 @@ my mistakes:
 - grep -r doesn't follow symlinks, grep -R does
 
 reverse proxy (proxy_pass) is not redirect. redirect = 301/302, browser goes to new url itself. proxy = nginx goes to the app and gives answer back to client
+
+## 26 september
+
+k8s ch day 3
+
+command = entrypoint
+
+args = cmd
+
+ You set in the Pod | The container runs |
+|---|---|
+| nothing | the image's `ENTRYPOINT` + `CMD` |
+| only `args` | the image's `ENTRYPOINT` + **your** args |
+| only `command` | **your** command (the image's `CMD` is ignored) |
+| both | **your** command + **your** args |
+
+kubectl logs crash --previous
+
+kubectl get pod crash -w
+
+| restartPolicy | Restart the container when it ends... | Docker |
+|---|---|---|
+| `Always` (default) | always, even with exit code 0 | `--restart=always` |
+| `OnFailure` | only with exit code ≠ 0 | `--restart=on-failure` |
+| `Never` | never | `--restart=no` |

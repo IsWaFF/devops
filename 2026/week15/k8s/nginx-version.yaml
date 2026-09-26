@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-version
+spec:
+  restartPolicy: Never
+  containers:
+    - name: nginx-version
+      image: nginx:1.30-alpine
+      args: ["nginx", "-v"]
