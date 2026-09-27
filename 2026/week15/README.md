@@ -269,3 +269,12 @@ kubectl get pod crash -w
 | `Always` (default) | always, even with exit code 0 | `--restart=always` |
 | `OnFailure` | only with exit code ≠ 0 | `--restart=on-failure` |
 | `Never` | never | `--restart=no` |
+
+## 27 september
+
+completed ["Nuuk": More SSH Troubles](https://sadservers.com/newserver/nuuk)
+
+answer:
+chmod -R 700 ~/.ssh
+
+problem was that ssh cant read .ssh
