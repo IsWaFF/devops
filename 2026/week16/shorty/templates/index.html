@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    body { font-family: monospace; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+    input[type=url] { width: 70%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+    td, th { text-align: left; padding: 4px 8px; border-bottom: 1px solid #ccc; }
+    .pod { color: #888; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <p class="pod">served by pod: {{ pod }}</p>
+  <form method="post">
+    <input type="url" name="url" placeholder="https://..." required>
+    <button>shorten</button>
+  </form>
+  <table>
+    <tr><th>code</th><th>url</th><th>hits</th></tr>
+    {% for code, url, hits in links %}
+    <tr><td><a href="/{{ code }}">{{ code }}</a></td><td>{{ url }}</td><td>{{ hits }}</td></tr>
+    {% else %}
+    <tr><td colspan="3">пусто</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

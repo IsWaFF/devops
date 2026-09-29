@@ -1,0 +1,18 @@
+# From a Kubernetes tutorial of 2018
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: legacy
+  template:
+    metadata:
+      labels:
+        app: legacy
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.30-alpine

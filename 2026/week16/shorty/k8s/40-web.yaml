@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shorty-gunicorn
+  namespace: shorty
+  labels:
+    app: gunicorn
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gunicorn
+  template:
+    metadata:
+      labels:
+        app: gunicorn
+    spec:
+      containers:
+        - name: gunicorn
+          image: ghcr.io/iswaff/shorty:0.1
+          ports:
+            - containerPort: 8000

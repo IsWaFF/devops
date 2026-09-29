@@ -41,3 +41,43 @@ a pod goes into it with `namespace: shop2` in its metadata, see [k8s/shop.yaml](
 **important!!** after `kubectl config set-context --current -n team-a` every command without `-n` goes to team-a. when done, always go back:
 
 - `kubectl config set-context --current -n default`
+
+## 29 september
+
+kubernetes day 5!
+
+i'm glad to say that i'm finally starting to understand kuber manifests, more than ever.
+
+today's topic was deployments
+
+### deployment
+
+example of a deployment:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+  labels:
+    app: podinfo
+spec:
+  replicas: 3                  # how many Pods
+  selector:                    # which Pods belong to this Deployment
+    matchLabels:
+      app: podinfo
+  template:                    # the Pod template (a Pod without apiVersion/kind)
+    metadata:
+      labels:
+        app: podinfo           # must match the selector!
+    spec:
+      containers:
+        - name: podinfo
+          image: ghcr.io/stefanprodan/podinfo:6.14.1
+          ports:
+            - containerPort: 9898
+```
+
+- `kubectl scale deployment podinfo --replicas=5`
+
+if we change the label of a deployment's pod to another one, it escapes the deployment

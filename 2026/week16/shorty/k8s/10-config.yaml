@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: shorty
+data:
+  WEB_CONCURRENCY: "2"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "shorty"
+  DB_USER: "shorty"

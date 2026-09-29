@@ -253,7 +253,7 @@ command = entrypoint
 
 args = cmd
 
- You set in the Pod | The container runs |
+| You set in the Pod | The container runs |
 |---|---|
 | nothing | the image's `ENTRYPOINT` + `CMD` |
 | only `args` | the image's `ENTRYPOINT` + **your** args |
