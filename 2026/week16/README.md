@@ -34,7 +34,7 @@ metadata:
   name: shop2
 ```
 
-a pod goes into it with `namespace: shop2` in its metadata, see [k8s/shop.yaml](k8s/shop.yaml)
+a pod goes into it with `namespace: shop2` in its metadata, see [k8s/day5/shop.yaml](k8s/day5/shop.yaml)
 
 - `kubectl get pods -n team-a` - pods in one namespace
 
@@ -118,3 +118,30 @@ umask takes permissions away from the default ones: 666 for files, 777 for dirs
 login shell reads: /etc/profile -> first of ~/.bash_profile, ~/.bash_login, ~/.profile -> .profile runs .bashrc
 
 ## 30 september
+
+k8s day 6, rolling updates
+
+### rollout
+
+- `kubectl rollout`
+- `kubectl rollout status deployment/podinfo`
+
+| Setting | Meaning | Default |
+| --- | --- | --- |
+| `maxSurge` | How many Pods **more** than `replicas` may exist during the update | 25% |
+| `maxUnavailable` | How many Pods **less** than `replicas` may be ready during the update | 25% |
+
+| maxSurge | maxUnavailable | Behaviour |
+| --- | --- | --- |
+| 1 | 0 | Safest: first start a new Pod, wait until it's ready, then stop an old one. Needs extra resources. |
+| 0 | 1 | No extra Pods (good when the cluster is full), but one Pod less during the update. |
+| 100% | 0 | Start all new Pods at once, then remove the old ones (fast, needs double resources). |
+
+- `kubectl rollout history deployment/podinfo`
+- `kubectl rollout undo deployment/podinfo`
+
+```yaml
+spec:
+  strategy:
+    type: Recreate
+```

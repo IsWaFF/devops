@@ -11,7 +11,7 @@ k8s practice
 ### kind: the cluster itself
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kind create cluster --name devops` | Make a new cluster. |
 | `kind get clusters` | Show all your clusters. |
 | `kind delete cluster --name devops` | Delete the cluster and everything in it. |
@@ -20,7 +20,7 @@ k8s practice
 ### kubectl: see what is running
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl get nodes` | Show the machines in the cluster. |
 | `kubectl get pods` | Show pods in the current namespace. |
 | `kubectl get pods -A` | Show pods in all namespaces. |
@@ -31,7 +31,7 @@ k8s practice
 ### kubectl: find out why something is broken
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl describe pod <name>` | Full info about a pod. Read **Events** at the bottom first. |
 | `kubectl logs <pod>` | Show what the app printed. |
 | `kubectl logs <pod> --previous` | Logs of the container that crashed before. Use it for CrashLoopBackOff. |
@@ -42,7 +42,7 @@ k8s practice
 ### kubectl: create and change things
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl apply -f file.yaml` | Create or update things from a file. |
 | `kubectl apply -f k8s/` | Apply all files in a folder, in alphabet order. |
 | `kubectl apply --dry-run=server -f k8s/` | Check the files on the server. Creates nothing. |
@@ -53,7 +53,7 @@ k8s practice
 ### kubectl: deployments
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl scale deploy podname --replicas=3` | Change how many copies run. |
 | `kubectl rollout status deploy podname` | Wait and show if the update finished. |
 | `kubectl rollout restart deploy podname` | Restart all pods one by one, for example after you change a ConfigMap. |
@@ -63,14 +63,14 @@ k8s practice
 ### kubectl: get to your app from the laptop
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl port-forward svc podname 8080:80` | Open localhost:8080 and send it to the service. Works while the terminal is open. |
 | `kubectl port-forward pod/<name> 8000` | Same, but to one pod. |
 
 ### kubectl: namespace and context
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl get ns` | Show all namespaces. |
 | `kubectl config current-context` | Show which cluster kubectl talks to now. |
 | `kubectl config set-context --current --namespace=shorty` | Make shorty the default namespace, so you don't need -n every time. |
@@ -78,7 +78,7 @@ k8s practice
 ### kubectl: help without Google
 
 | command | what it does |
-|---|---|
+| --- | --- |
 | `kubectl explain deployment.spec` | Show what fields go here and what they mean. |
 | `kubectl create deployment podname --image=x --dry-run=client -o yaml` | Print a starter YAML. Creates nothing. |
 | `kubectl get deploy podname -o yaml` | Show the full YAML of something that already runs. |
@@ -97,12 +97,12 @@ completed ["Cairo": Time for a Timer](https://sadservers.com/scenario/cairo) on 
 - cat /opt/scripts/health.sh
 - cat /var/log/health.log
 - sudo ss -tlnp
-- curl -s --max-time 2 http://localhost
+- curl -s --max-time 2 <http://localhost>
 - sudo iptables -L -n -v --line-numbers
 
 problem was iptables rule in OUTPUT that drops everything to 127.0.0.1:80, so curl just hangs. and health.timer was not enabled
 
-__answer:__
+**answer:**
 
 - sudo iptables -D OUTPUT 1
 - sudo systemctl daemon-reload
@@ -153,7 +153,7 @@ enable:
 
 same in cron:
 
-- 0 3 * * * /usr/local/bin/backup.sh
+- 0 3 ** * /usr/local/bin/backup.sh
 
 ### iptables
 
@@ -184,20 +184,21 @@ commands:
 
 started my vibecoded kuber challange. **DAY 1**
 
- __new for me:__
+ **new for me:**
 
 - kubectl run podname --image=nginx:1.30-alpine - run pod
 - kubectl describe pod podname - see pod card, actions
 - kubectl logs podname - see logs
 - kubectl exec -it podname -- sh  -  to enter into the pod
 - kubectl port-forward pod/podname 8080:80 - to forward port to local machine
-- kubectl delete pod podname - __**not foget!!**__
+- kubectl delete pod podname - ****not foget!!****
 
 ## 25 september
 
-day 2 of challange. todays topic was YAML. 
+day 2 of challange. todays topic was YAML.
 
 **main commands:**
+
 - kubectl apply -f k8s/manifest.yaml
 - kubectl api-resources - to get ApiVersion filed
 - kubectl diff -f
@@ -217,12 +218,12 @@ completed ["Bergen": Port already in use](https://sadservers.com/scenario/bergen
 
 problem was django dev server (django.service) sitting on 8000, the same port standalone wants. and nginx on 80 is a reverse proxy to django on 8000, so you can't just kill django or web on 80 dies
 
-__answer:__
+**answer:**
 
 - sudo nano /etc/systemd/system/django.service - runserver 0.0.0.0:8000 -> 0.0.0.0:8001
 - sudo systemctl daemon-reload
 - sudo systemctl restart django
-- sudo nano +7 /etc/nginx/sites-available/bergen - proxy_pass http://127.0.0.1:8001;
+- sudo nano +7 /etc/nginx/sites-available/bergen - proxy_pass <http://127.0.0.1:8001>;
 - sudo nginx -t && sudo systemctl reload nginx
 - curl localhost - hello SadServers
 - ./standalone - OK
@@ -254,7 +255,7 @@ command = entrypoint
 args = cmd
 
 | You set in the Pod | The container runs |
-|---|---|
+| --- | --- |
 | nothing | the image's `ENTRYPOINT` + `CMD` |
 | only `args` | the image's `ENTRYPOINT` + **your** args |
 | only `command` | **your** command (the image's `CMD` is ignored) |
@@ -265,7 +266,7 @@ kubectl logs crash --previous
 kubectl get pod crash -w
 
 | restartPolicy | Restart the container when it ends... | Docker |
-|---|---|---|
+| --- | --- | --- |
 | `Always` (default) | always, even with exit code 0 | `--restart=always` |
 | `OnFailure` | only with exit code ≠ 0 | `--restart=on-failure` |
 | `Never` | never | `--restart=no` |

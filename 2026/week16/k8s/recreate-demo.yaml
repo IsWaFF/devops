@@ -1,16 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: recreate-demo
 spec:
   replicas: 3
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      app: api
+      app: recreate-demo
   template:
     metadata:
+      name: podinfo
       labels:
-        app: api
+        app: recreate-demo
     spec:
       containers:
         - name: podinfo
