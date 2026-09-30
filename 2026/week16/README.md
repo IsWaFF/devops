@@ -81,3 +81,40 @@ spec:
 - `kubectl scale deployment podinfo --replicas=5`
 
 if we change the label of a deployment's pod to another one, it escapes the deployment
+
+### sadservers
+
+completed ["Kortenberg": Can't touch this!](https://sadservers.com/scenario/kortenberg), ~40 min, 0 clues, 2 hints from claude
+
+**key fixes and commands:**
+
+- mkdir swag && ls -la - new dir is d---------, so nobody can do anything with it
+- umask - 0777
+- umask -S - u=,g=,o= (same thing, but readable)
+- bash -l -c umask - what a new login shell gets (this is how the checker logs in), not my current shell
+- cat ~/agent/check.sh
+- ls -la ~ - .profile date is dec 1 (same as agent/, when the scenario was made), .bashrc is jul 30 (package default)
+
+problem was umask 0777 in /etc/profile, it runs on every login shell. ~/.profile didn't fix anything
+
+**answer:**
+
+- sudo vim /etc/profile - umask 0777 -> umask 022
+- umask 022 - fix the current shell too
+- bash -l -c umask - 0022
+
+my mistakes:
+
+- put umask in .bashrc -> check said no. debian .bashrc starts with `case $- in *i*) ;; *) return;; esac`, so in a non-interactive shell (the checker) it quits before my line
+- changed umask before finding where 0777 comes from. find the source first, then fix it there
+
+### umask
+
+umask takes permissions away from the default ones: 666 for files, 777 for dirs
+
+- 022 -> files 644, dirs 755 (normal)
+- 0777 -> files ---------, dirs d---------
+
+login shell reads: /etc/profile -> first of ~/.bash_profile, ~/.bash_login, ~/.profile -> .profile runs .bashrc
+
+## 30 september
