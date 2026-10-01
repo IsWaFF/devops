@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: web
-  namespace: shorty
+  name: podinfo-8080
   labels:
-    app: gunicorn
+    app: podinfo
 spec:
   selector:
-    app: gunicorn
+    app: podinfo
   ports:
     - name: http
-      port: 80
+      port: 8080
       targetPort: http

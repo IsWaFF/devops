@@ -177,3 +177,29 @@ my mistakes:
 - to read a file you need `x` on every dir in the path + `r` on the file
 - symlink permissions don't matter, the target's do
 - `chmod o+rx` - add single bits instead of numbers
+
+## 1 october
+
+### k8s Day 7 - Services and DNS
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo
+spec:
+  selector:            # send traffic to Pods with these labels
+    app: podinfo
+  ports:
+    - name: http
+      port: 80         # the port of the Service
+      targetPort: 9898 # the port of the container in the Pod
+```
+
+- `port` - what clients call, `targetPort` - where the app in the pod listens. no targetPort -> same as port
+- `targetPort: http` - port by name, the name is set in the pod's `ports:` (see [k8s/podinfo-8080.yaml](k8s/podinfo-8080.yaml))
+- `kubectl get endpointslices -l kubernetes.io/service-name=podinfo` - pod IPs behind the service. empty -> selector doesn't match pod labels
+- `kubectl exec client -- wget -qO- http://podinfo` - test from a pod
+- ClusterIP doesn't answer ping, kube-proxy only forwards TCP/UDP to the service ports
+
+dns: `podinfo` - same namespace, `backend.backend` - other namespace, `backend.backend.svc.cluster.local` - full name

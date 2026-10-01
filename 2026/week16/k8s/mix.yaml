@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: web
-  namespace: shorty
+  name: mix
   labels:
-    app: gunicorn
+    tier: mix
 spec:
   selector:
-    app: gunicorn
+    tier: mix
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: 80
