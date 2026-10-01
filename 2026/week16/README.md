@@ -145,3 +145,35 @@ spec:
   strategy:
     type: Recreate
 ```
+
+### sadservers
+
+completed ["Fukuoka": Forbidden Association](https://sadservers.com/scenario/fukuoka), 29:55, 0 clues. fix was `chmod -R 777` -> not counted, redo
+
+**key fixes and commands:**
+
+- `curl -v http://localhost` - 404 from nginx, so the port is fine
+- `sudo tail /var/log/nginx/error.log` - `stat() "/var/www/html/" failed (13: Permission denied)`
+- `sudo nginx -T | grep -E '^\s*(root|index)'` - root is /var/www/html
+- `ps aux | grep nginx` - workers run as www-data
+- `sudo namei -l /var/www/html/index.html` - permissions of every dir on the path, follows the symlink
+- `sudo -u www-data cat /var/www/html/index.html` - check as www-data, not as root
+
+problem: www-data had no `x` on /var/www (-> 404) and no `r` on /opt/site-content/real_index.html, the symlink target (-> 403)
+
+**answer:**
+
+- `sudo chmod o+x /var/www`
+- `sudo chgrp www-data /opt/site-content/real_index.html` (or `chmod o+r`)
+
+my mistakes:
+
+- `sudo nginx` while nginx was already running, chmod on index.nginx-debian.html (not in the log), reload after every chmod (not needed)
+- `chmod -R 777` instead of 2 bits
+
+### permissions
+
+- dir: `r` = list names, `x` = go through. file: `r` = read
+- to read a file you need `x` on every dir in the path + `r` on the file
+- symlink permissions don't matter, the target's do
+- `chmod o+rx` - add single bits instead of numbers
