@@ -182,6 +182,8 @@ my mistakes:
 
 ### k8s Day 7 - Services and DNS
 
+Service - stable ip for pods !
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -234,5 +236,49 @@ my mistakes:
 
 - the scheduler looks at requests, not at real usage (top/free). free = Allocatable - requests in Allocated resources
 - request - reserved for the pod, limit - max (memory -> OOMKilled, cpu -> throttled)
-- cpu: `1` = `1000m`, `100m` = 0.1 core. memory: `Ki/Mi/Gi` (x1024), `memory: 200m` = 0.2 bytes
+- cpu: `1` = `1000m`, `100m` = 0.1 core. memory:лг `Ki/Mi/Gi` (x1024), `memory: 200m` = 0.2 bytes
 - kind: every node sees the whole laptop (12 cpu)
+
+## k8s day 8
+
+### k8s Day 8 - Reaching Your App
+
+all types balance between pods (kube-proxy), not only LoadBalancer. each next type = previous one + one more thing:
+
+- ClusterIP - one virtual ip `10.96.x.x`, only from inside the cluster
+- NodePort - ClusterIP + port 30000-32767 on every node, from outside: `node_ip:port`
+- LoadBalancer - NodePort + external ip from the cloud. kind has no cloud -> `EXTERNAL-IP <pending>` forever
+- headless (`clusterIP: None`) - no virtual ip at all, dns returns pod ips
+
+```yaml
+spec:
+  type: NodePort
+  ports:
+    - port: 80          # ClusterIP port, inside the cluster
+      targetPort: 9898  # container port
+      nodePort: 30080   # port on every node. no nodePort -> random (my podinfo-random got 31929)
+```
+
+**port-forward:**
+
+- `kubectl port-forward service/podinfo 8080:80` - tunnel only for me, picks one pod at start, no balancing
+
+**nodeport and localhost:**
+
+- nodeport listens on the node ip, not on my laptop
+- kind: node = docker container, `kubectl get nodes -o wide` -> 172.18.0.x. so `curl 172.18.0.8:31929` works, `curl localhost:31929` - failed to connect
+- docker desktop forwards nodeports to localhost, that's why `localhost:30080` works for them
+- any node works, even without a pod on it - kube-proxy opens the port on all nodes
+
+**keep-alive:**
+
+- kube-proxy balances tcp connections, not requests (L4)
+- separate `curl` -> different pods. browser F5 -> same pod, it keeps one connection open
+- per-request balancing = L7 (Ingress/Gateway). long connections (gRPC) stick to one pod
+
+**headless:**
+
+- `nslookup podinfo.default.svc.cluster.local` -> one ip `10.96.212.85`, same after scaling
+- `nslookup podinfo-headless.default.svc.cluster.local` -> pod ips, 3 replicas = 3 ips, scale to 5 = 5 ips
+- needed when "any pod" is not ok: StatefulSet/databases (`postgres-0.<svc>`), client balances itself (gRPC), pods find each other (etcd, kafka)
+- nslookup takes a name, not url: `http://podinfo` -> NXDOMAIN

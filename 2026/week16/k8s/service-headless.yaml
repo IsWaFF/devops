@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: shop-nodeport
+  name: podinfo-headless
 spec:
-  type: NodePort
+  clusterIP: None
   selector:
     app: podinfo
   ports:
-    - port: 80
+    - name: http
+      port: 9898
       targetPort: 9898
-      nodePort: 30000
