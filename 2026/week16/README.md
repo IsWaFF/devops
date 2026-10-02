@@ -148,7 +148,7 @@ spec:
 
 ### sadservers
 
-completed ["Fukuoka": Forbidden Association](https://sadservers.com/scenario/fukuoka), 29:55, 0 clues. fix was `chmod -R 777` -> not counted, redo
+completed ["Fukuoka": Forbidden Association](https://sadservers.com/scenario/fukuoka)
 
 **key fixes and commands:**
 
@@ -203,3 +203,36 @@ spec:
 - ClusterIP doesn't answer ping, kube-proxy only forwards TCP/UDP to the service ports
 
 dns: `podinfo` - same namespace, `backend.backend` - other namespace, `backend.backend.svc.cluster.local` - full name
+
+## 2 october
+
+### sadservers
+
+completed ["Bilbao": Basic Kubernetes Problems](https://sadservers.com/scenario/bilbao)
+
+main thing i learned: a pod can have a selector for a node (`nodeSelector`)
+
+**key fixes and commands:**
+
+- `cat manifest.yml` - `nodeSelector: disk: ssd`, requests `memory: 2000Mi`
+- `k describe pod <pod>` - Events: `0/1 nodes are available: 1 Insufficient memory`
+- `k describe node node1` - `Allocatable` and `Allocated resources`, how much is left for requests
+
+problem: no node with label `disk=ssd` + the 2000Mi memory request didn't fit on the node
+
+**answer:**
+
+- `k label node node1 disk=ssd` (or remove nodeSelector)
+- requests memory 2000Mi -> 200Mi in manifest.yml, `k apply -f manifest.yml`
+
+my mistakes:
+
+- cpu request 100m -> 50m, Events said nothing about cpu
+- `k delete -f` + `apply` twice. `apply` alone updates the deployment, after the label the scheduler retries the pending pod by itself
+
+### resources
+
+- the scheduler looks at requests, not at real usage (top/free). free = Allocatable - requests in Allocated resources
+- request - reserved for the pod, limit - max (memory -> OOMKilled, cpu -> throttled)
+- cpu: `1` = `1000m`, `100m` = 0.1 core. memory: `Ki/Mi/Gi` (x1024), `memory: 200m` = 0.2 bytes
+- kind: every node sees the whole laptop (12 cpu)
