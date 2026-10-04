@@ -236,7 +236,7 @@ my mistakes:
 
 - the scheduler looks at requests, not at real usage (top/free). free = Allocatable - requests in Allocated resources
 - request - reserved for the pod, limit - max (memory -> OOMKilled, cpu -> throttled)
-- cpu: `1` = `1000m`, `100m` = 0.1 core. memory:лг `Ki/Mi/Gi` (x1024), `memory: 200m` = 0.2 bytes
+- cpu: `1` = `1000m`, `100m` = 0.1 core. memory: `Ki/Mi/Gi` (x1024), `memory: 200m` = 0.2 bytes
 - kind: every node sees the whole laptop (12 cpu)
 
 ## k8s day 8
@@ -282,3 +282,41 @@ spec:
 - `nslookup podinfo-headless.default.svc.cluster.local` -> pod ips, 3 replicas = 3 ips, scale to 5 = 5 ips
 - needed when "any pod" is not ok: StatefulSet/databases (`postgres-0.<svc>`), client balances itself (gRPC), pods find each other (etcd, kafka)
 - nslookup takes a name, not url: `http://podinfo` -> NXDOMAIN
+
+## 4 october
+
+today is a chill day, the only thing i learned is for CI
+
+### set -x
+
+`set -x` - logging in scripts
+
+BAD example:
+
+```bash
+KEY="super-secret"
+set -x
+echo "$KEY" > key.txt
+```
+
+log output:
+
+```
++ echo super-secret
+```
+
+the key is leaking!!
+
+best practice:
+
+```bash
+KEY="super-secret"
+set -x
+echo "start deploy"
+set +x
+echo "$KEY" > key.txt
+set -x
+echo "deploy done"
+```
+
+`set +x` - logging off
