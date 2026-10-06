@@ -1,25 +1,39 @@
+# The Secret was made by a teammate with:  echo 'k8s-is-fun-2026' | base64
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
-  name: db-config
-data:
-  DATABASE_HOST: "postgres.database"
-  DATABASE_PORT: "5432"
+  name: app-db
+type: Opaque
+stringData:
+  username: shop
+  password: k8s-is-fun-2026
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: db-client
+  name: app
 spec:
   containers:
-    - name: db-client
-      image: busybox:1.38
-      command:
-        [
-          "sh",
-          "-c",
-          "echo connecting to $DATABASE_HOST:$DATABASE_PORT; sleep 3600",
-        ]
-      envFrom:
-        - configMapRef:
-            name: db-config
+    - name: app
+      image: postgres:18.6-alpine
+      command: ["sh", "-c"]
+      args:
+        - |
+          until psql -c 'select 1' >/dev/null; do echo "login failed, retry in 5s"; sleep 5; done
+          echo "connected!"
+          sleep 3600
+      env:
+        - name: PGHOST
+          value: "postgres"
+        - name: PGDATABASE
+          value: "shop"
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: app-db
+              key: username
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-db
+              key: password

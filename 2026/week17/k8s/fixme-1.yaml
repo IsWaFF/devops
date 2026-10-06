@@ -1,12 +1,7 @@
 apiVersion: v1
-kind: Pod
+kind: Secret
 metadata:
-  name: reporter
-spec:
-  containers:
-    - name: reporter
-      image: busybox:1.38
-      command: ["sh", "-c", "echo Report for $TEAM in $REGION; sleep 3600"]
-      envFrom:
-        - configMapRef:
-            name: reporter-config
+  name: api-token
+type: Opaque
+stringData:
+  token: my-secret-token-123

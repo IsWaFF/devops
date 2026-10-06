@@ -1,28 +1,30 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: proxy2
-  labels:
-    app: proxy2
+  name: payments
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stripe-key
+  namespace: payments
+type: Opaque
+stringData:
+  key: sk_test_not_a_real_key
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout
+  namespace: payments
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: proxy2
-  template:
-    metadata:
-      labels:
-        app: proxy2
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:1.30-alpine
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: config
-              mountPath: /etc/nginx
-      volumes:
-        - name: config
-          configMap:
-            name: nginx-config
+  containers:
+    - name: checkout
+      image: busybox:1.38
+      command: ["sh", "-c", "echo using key ${STRIPE_KEY:0:8}...; sleep 3600"]
+      env:
+        - name: STRIPE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: stripe-key
+              key: key

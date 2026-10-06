@@ -1,0 +1,9 @@
+# DEMO ONLY. Never commit a file like this with a real password to git!
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-auth-example
+type: Opaque
+stringData:
+  username: shop
+  password: k8s-is-fun-2026
