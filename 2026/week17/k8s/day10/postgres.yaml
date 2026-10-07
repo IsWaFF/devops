@@ -35,13 +35,6 @@ spec:
             - name: db-auth
               mountPath: /run/secrets/db
               readOnly: true
-          readinessProbe:
-            timeoutSeconds: 3
-            initialDelaySeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
-            exec:
-              command: [" pg_isready"]
       volumes:
         - name: db-auth
           secret:

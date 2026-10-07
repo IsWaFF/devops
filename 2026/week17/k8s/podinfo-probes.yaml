@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog
+  name: podinfo
+  labels:
+    app: podinfo
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: catalog
+      app: podinfo
   template:
     metadata:
       labels:
-        app: catalog
+        app: podinfo
     spec:
       containers:
         - name: podinfo
@@ -18,19 +20,25 @@ spec:
           ports:
             - name: http
               containerPort: 9898
-          readinessProbe:
+          readinessProbe:          # "can I send traffic to you?"
             httpGet:
               path: /readyz
-              port: 9898
+              port: http
             periodSeconds: 3
+          livenessProbe:           # "are you still alive?"
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog
+  name: podinfo
 spec:
   selector:
-    app: catalog
+    app: podinfo
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: http

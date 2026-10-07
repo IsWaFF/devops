@@ -162,3 +162,49 @@ my mistakes:
 - `-noenc` is openssl 3, in 1.1.1 it's `-nodes`. without it the key gets a passphrase and nginx asks for it on start
 - nginx reads certs only on start/reload. new file on disk != new cert for clients
 - nginx -s reload only sends a signal, a broken config fails silently -> nginx -t first
+
+## 8 october
+
+k8s: day 11. probes
+
+example
+
+```yaml
+          readinessProbe:          # "can I send traffic to you?"
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 3
+          livenessProbe:           # "are you still alive?"
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+```
+
+- readiness fails -> pod is removed from service endpoints, NOT restarted. rollout waits for it
+- liveness fails -> kubelet restarts the container
+- startup -> liveness and readiness are off until it passes. for slow apps
+- `httpGet` - 200-399 is ok, `exec` - exit code 0 is ok
+- `port: http` is a name -> it must exist in `ports:` of the container
+
+### startup probe
+
+```yaml
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 5
+            failureThreshold: 12   # 12 x 5s = up to 60s to start
+```
+
+- time to start = failureThreshold x periodSeconds, no big initialDelaySeconds
+
+### Gotchas (fixme)
+
+- `port "http" not found` -> probe errored, not failed -> kubelet ignores it, 0 restarts. 0 restarts != probe works, check events
+- default `timeoutSeconds` is 1s -> `/delay/2` always times out -> healthy app restarts forever. fix: `timeoutSeconds: 3`
+- readiness on a wrong port (9999) -> pods `Running 0/1`, service has no endpoints
+- liveness checks only the app itself. another service in liveness -> it goes down = all pods restart, restart doesn't fix it
+- `curl` without `-f` returns 0 on 404/500 -> exec probe is always green

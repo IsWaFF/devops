@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-demo
+spec:
+  containers:
+    - name: app
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          touch /tmp/healthy
+          echo "healthy for 30 seconds"
+          sleep 30
+          rm -f /tmp/healthy
+          echo "now I am broken, but still running"
+          sleep 600
+      livenessProbe:
+        exec:
+          command: ["cat", "/tmp/healthy"]
+        initialDelaySeconds: 5
+        periodSeconds: 5

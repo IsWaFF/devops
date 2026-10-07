@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog
+  name: impatient
 spec:
-  replicas: 2
   selector:
     matchLabels:
-      app: catalog
+      app: impatient
   template:
     metadata:
+      name: impatient
       labels:
-        app: catalog
+        app: impatient
     spec:
       containers:
         - name: podinfo
@@ -18,19 +18,11 @@ spec:
           ports:
             - name: http
               containerPort: 9898
-          readinessProbe:
+          livenessProbe:
             httpGet:
-              path: /readyz
-              port: 9898
-            periodSeconds: 3
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: catalog
-spec:
-  selector:
-    app: catalog
-  ports:
-    - port: 80
-      targetPort: http
+              path: /delay/2
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            failureThreshold: 3
+            timeoutSeconds: 3

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stripe-key
+  namespace: payments
+type: Opaque
+stringData:
+  key: sk_test_not_a_real_key
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout
+  namespace: payments
+spec:
+  containers:
+    - name: checkout
+      image: busybox:1.38
+      command: ["sh", "-c", "echo using key ${STRIPE_KEY:0:8}...; sleep 3600"]
+      env:
+        - name: STRIPE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: stripe-key
+              key: key
