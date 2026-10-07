@@ -1,0 +1,11 @@
+certs/
+cases/
+*.key
+*.pem
+*.crt
+*.csr
+*.der
+*.pfx
+*.p12
+*.srl
+gh.txt

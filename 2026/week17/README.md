@@ -123,3 +123,42 @@ env:
 
 - `echo 'pass' | base64` adds `\n` to the value -> password is wrong, login fails. use `echo -n` or `stringData`
 - a secret lives in a namespace, the pod can use only secrets from its own namespace
+
+## 7 october
+
+completed ["Geneva": Renew an SSL Certificate](https://sadservers.com/scenario/geneva), ~2h, 4 servers (3 timed out), 5 hints from claude
+
+**key fixes and commands:**
+
+- sudo nginx -T | grep ssl_certificate - nginx itself says where the cert and the key are: /etc/nginx/ssl/nginx.crt and nginx.key
+- openssl x509 -in /etc/nginx/ssl/nginx.crt -noout -subject -dates - subject `CN = localhost, O = Acme, OU = IT Department, L = Geneva, ST = Geneva, C = CH`, notAfter feb 29 2024
+- openssl version - 1.1.1w, old one
+- echo | openssl s_client -connect localhost:443 2>/dev/null | openssl x509 -noout -dates - what nginx really serves, not what's on disk
+
+problem was an expired self-signed cert. the new one must have the same subject
+
+**answer:**
+
+```bash
+cd /etc/nginx/ssl
+sudo openssl req -x509 -newkey rsa:2048 -nodes -keyout nginx.key -out nginx.crt -days 366 -subj "/CN=localhost/O=Acme/OU=IT Department/L=Geneva/ST=Geneva/C=CH" -addext "subjectAltName=DNS:localhost"
+sudo nginx -t && sudo nginx -s reload
+```
+
+then both test commands from the task -> new dates, same subject
+
+my mistakes:
+
+- looked for the cert in /etc/ca-certificates and /etc/ssl/certs. that's the trust store (root CAs), not the site cert. ask the program that uses the cert (nginx -T), don't guess dirs
+- failed openssl command left nginx.key empty (0 bytes). backup before replacing
+- copied -subj from the cheatsheet (only CN) instead of checking the task
+- pasted subject the way openssl prints it (`CN = localhost, O = Acme`) -> `Skipping unknown attribute "CN "`
+- forgot L and ST, pressed Check without running the test commands
+
+### tls cert
+
+- subject - who the cert is for, issuer - who signed it. self-signed -> subject = issuer
+- -subj format: every field starts with /, no spaces around =, no commas
+- `-noenc` is openssl 3, in 1.1.1 it's `-nodes`. without it the key gets a passphrase and nginx asks for it on start
+- nginx reads certs only on start/reload. new file on disk != new cert for clients
+- nginx -s reload only sends a signal, a broken config fails silently -> nginx -t first
