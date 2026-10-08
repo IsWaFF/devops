@@ -208,3 +208,101 @@ example
 - readiness on a wrong port (9999) -> pods `Running 0/1`, service has no endpoints
 - liveness checks only the app itself. another service in liveness -> it goes down = all pods restart, restart doesn't fix it
 - `curl` without `-f` returns 0 on 404/500 -> exec probe is always green
+
+## 9 october
+
+k8s: day 12. resources
+
+example
+
+```yaml
+      resources:
+        requests:            # "I need at least this much", for the scheduler
+          cpu: "250m"
+          memory: "64Mi"
+        limits:              # "never more than this", the kernel (cgroups) enforces it
+          cpu: "500m"
+          memory: "128Mi"
+```
+
+- cpu is in cores: `1` = one core, `500m` = half a core (`m` = millicores)
+- memory: `64Mi` = 64 x 1024 x 1024, `64M` = 64 x 1000 x 1000. use `Mi`/`Gi`
+- `cpu: 400mi` -> `unable to parse quantity's suffix`. cpu has only `m`, `i` is for memory
+- `Gi` instead of `Mi` is the classic typo, one letter = 1024x more
+
+### requests are for the scheduler
+
+- scheduler looks only at requests, not at real usage: a node fits if allocatable - already requested >= my requests
+- nothing fits -> pod is `Pending` forever, event `FailedScheduling ... Insufficient cpu`
+- `kubectl describe node lab-worker | grep -A 6 '^Allocated resources'` - how much is already requested on a node
+- kind nodes see the whole laptop (12 cpu), on real servers every node has its own
+- `big`: 5 cpu per pod, 12 cpu per worker -> 2 pods per worker, control-plane has a taint -> 5 replicas = 4 `Running` + 1 `Pending`. idle pods, but requests decide
+
+### over the limit
+
+- memory over the limit -> kernel kills it: `OOMKilled`, exit code 137 (128 + 9 = SIGKILL) -> restart -> `CrashLoopBackOff`
+- exit code 137 -> check OOMKilled first
+- the app has no time to log "out of memory", logs just stop in the middle
+- files in `/dev/shm` (tmpfs) count as memory
+- `kubectl get pod memhog -o jsonpath='{.status.containerStatuses[0].lastState.terminated.reason}'` -> `OOMKilled`
+- cpu over the limit -> not killed, throttled: pod stays `Running`, just slow (slow responses, not crashes)
+- `kubectl exec cpuhog -- cat /sys/fs/cgroup/cpu.max` -> `20000 100000` = 20% of a core = `200m`. `cpu.stat`: `nr_throttled` ~ `nr_periods`
+
+### QoS classes
+
+node is out of memory -> kubelet evicts pods: BestEffort first, Guaranteed last
+
+- `Guaranteed` - every container has requests = limits, for cpu AND memory. only limits set -> k8s copies them into requests -> also Guaranteed
+- `Burstable` - some requests/limits, but not Guaranteed
+- `BestEffort` - nothing at all. all my pods before day 12 were this
+
+`kubectl get pod guaranteed -o jsonpath='{.status.qosClass}'`
+
+### LimitRange and ResourceQuota
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: defaults
+  namespace: team-a
+spec:
+  limits:
+    - type: Container
+      defaultRequest:        # container has no requests -> these
+        cpu: "100m"
+        memory: "64Mi"
+      default:               # container has no limits -> these
+        cpu: "200m"
+        memory: "128Mi"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: team-a-quota
+  namespace: team-a
+spec:
+  hard:
+    pods: "3"
+    requests.cpu: "1"         # sum of cpu requests of all pods in the namespace
+    requests.memory: "512Mi"
+```
+
+- LimitRange - per container: defaults, min/max
+- ResourceQuota - total for the whole namespace: number of pods, sum of requests/limits
+- both are checked on create (admission). over the quota -> `Forbidden: exceeded quota`, the pod never exists. running pods are not touched
+- quota on `requests.cpu`/`requests.memory`/`limits.memory` -> every pod MUST set them, or `must specify ...`. a LimitRange with defaults fixes it
+- `kubectl describe resourcequota -n team-a` - Used / Hard
+
+### what to set
+
+- always set requests (cpu and memory), otherwise BestEffort
+- memory limit = memory request (or a bit more)
+- cpu limit is optional, it throttles even when the node is idle
+- measure, don't guess: `kubectl top` (day 25)
+
+### Gotchas (fixme)
+
+- `64Gi` instead of `64Mi` -> `Pending`, `Insufficient memory`, the pod asks for more than the whole laptop
+- limit 32Mi, app loads 60MB into `/dev/shm` -> `OOMKilled`, logs stop after `loading 60 MB...`. fix: bigger limit (128Mi), but first check it's not a leak
+- deployment `0/2`, no pods, no events on the deployment -> the error is one level down: `kubectl describe rs -n billing` -> `failed quota: billing-quota: must specify limits.memory ...`. fix: add resources to the template (or a LimitRange). deployment -> replicaset -> pod

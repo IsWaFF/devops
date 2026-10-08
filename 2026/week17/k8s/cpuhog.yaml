@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpuhog
+spec:
+  containers:
+    - name: cpuhog
+      image: busybox:1.38
+      command: ["sh", "-c", "echo burning CPU...; while true; do :; done"]
+      resources:
+        requests:
+          cpu: "100m"
+        limits:
+          cpu: "200m"

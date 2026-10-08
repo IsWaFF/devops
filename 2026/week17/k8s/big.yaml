@@ -1,23 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reports
+  name: big
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reports
+      size: big
   template:
     metadata:
+      name: big
       labels:
-        app: reports
+        size: big
     spec:
       containers:
         - name: podinfo
           image: ghcr.io/stefanprodan/podinfo:6.15.0
           resources:
             requests:
-              cpu: "100m"
-              memory: "64Mi"
-            limits:
-              memory: "100Mi"
+              cpu: 5

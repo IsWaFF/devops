@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sized
+spec:
+  containers:
+    - name: podinfo
+      image: ghcr.io/stefanprodan/podinfo:6.15.0
+      resources:
+        requests:            # reserved for me — used by the scheduler
+          cpu: "250m"        # a quarter of a CPU core
+          memory: "64Mi"
+        limits:              # the maximum I may use
+          cpu: "500m"
+          memory: "128Mi"
