@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: whoami
+spec:
+  initContainers:
+    - name: prepare
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          echo "$HOSTNAME " > /tmp/index/index.html
+          echo "$NODE" >> /tmp/index/index.html
+      env:
+        - name: NODE
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+      volumeMounts:
+        - mountPath: /tmp/index
+          name: emptydir
+  containers:
+    - name: web
+      image: nginx:1.30-alpine
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: emptydir
+  volumes:
+    - name: emptydir
+      emptyDir: {}

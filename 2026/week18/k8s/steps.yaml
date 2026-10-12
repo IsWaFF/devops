@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: steps
+spec:
+  initContainers:
+    - name: step-1
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          echo "step 1"
+    - name: step-2
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          echo "step 2"
+  containers:
+    - name: app-started
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          echo "app started"

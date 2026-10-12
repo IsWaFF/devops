@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: graceful
+spec:
+  terminationGracePeriodSeconds: 30
+  containers:
+    - name: app
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          trap 'echo "got SIGTERM, finishing requests..."; sleep 2; echo "bye"; exit 0' TERM
+          echo "working"
+          while true; do sleep 1; done
