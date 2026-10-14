@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-script
+data:
+  server.sh: |
+    trap 'echo "got SIGTERM, closing connections..."; sleep 1; echo "bye"; exit 0' TERM
+    echo "server started"
+    while true; do sleep 1; done
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: server
+spec:
+  containers:
+    - name: server
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          ./app/server.sh; echo server stopped
+
+      volumeMounts:
+        - name: script
+          mountPath: /app
+  volumes:
+    - name: script
+      configMap:
+        name: server-script

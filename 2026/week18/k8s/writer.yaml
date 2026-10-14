@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: writer
+spec:
+  containers:
+    - name: writer
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          trap 'exit 0' TERM
+          while true; do
+            echo "$(date) written by $HOSTNAME" >> /data/log.txt
+            sleep 2
+          done
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: data

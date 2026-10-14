@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notebook
+spec:
+  containers:
+    - name: notebook
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          trap 'exit 0' TERM
+          while true; do sleep 1; done
+      volumeMounts:
+        - mountPath: /notes
+          name: notes
+  volumes:
+    - name: notes
+      persistentVolumeClaim:
+        claimName: notes
