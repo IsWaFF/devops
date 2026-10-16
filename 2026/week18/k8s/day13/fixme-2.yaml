@@ -7,10 +7,10 @@ spec:
     - name: log-shipper
       image: busybox:1.38
       restartPolicy: Always
-      command: ["sh", "-c", "tail -F /logs/acces.log"]
+      command: ["sh", "-c", "tail -F /log/access.log"]
       volumeMounts:
         - name: logs
-          mountPath: /logs
+          mountPath: /log
   containers:
     - name: web
       image: nginx:1.30-alpine

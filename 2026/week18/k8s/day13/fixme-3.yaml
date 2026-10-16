@@ -16,10 +16,7 @@ spec:
   containers:
     - name: server
       image: busybox:1.38
-      command: ["sh", "-c"]
-      args:
-        - |
-          ./app/server.sh; echo server stopped
+      command: ["sh", "./app/server.sh"]
 
       volumeMounts:
         - name: script
