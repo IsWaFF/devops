@@ -138,3 +138,76 @@ spec:
 - `kubectl exec deploy/site -- ...` - exec into a deployment pod without the hash in the name
 - `wget -O file url` / `wget -qO- url` - wget saves into a file itself, `wget url > file` gives an empty file
 - `docker exec lab-worker2 ls /var/local-path-provisioner` - look at the volume on the kind node
+
+## 18 october
+
+nginx day. btw i hate nets
+
+exapmle of nginx deafult.conf:
+
+```nginx
+server {
+    listen 80;                    
+
+    location /api/ {
+        proxy_pass http://api:8080/;
+                
+    }
+
+    location /api/admin/ {
+        return 403;
+                
+    }
+}
+```
+
+### proxy_pass and the slash
+
+- nothing after the port -> nginx sends the path as is
+- something after the port (even just `/`) -> nginx cuts the location part from the path and puts that thing instead
+- what api got on `curl localhost:8081/api/v1/orders` (`docker logs api`):
+  - `location /api/` + `proxy_pass http://api:8080` -> `/api/v1/orders` -> 404, api doesn't know any /api
+  - `location /api/` + `proxy_pass http://api:8080/` -> `/v1/orders` -> 200
+  - `location /api` + `proxy_pass http://api:8080/` -> `//v1/orders` -> 404. and `/apiv1/orders` works too, location matches a string, not folders
+- slash at the end of proxy_pass -> slash at the end of location too
+
+### location
+
+- one `location /api/` catches everything that starts with /api/, i don't write every path of the app
+- nginx takes the longest prefix that fits, order in the file doesn't matter -> `/api/admin/` wins over `/api/`
+- `/api/admin/users` closes one url, `/api/admin/` closes the whole admin part
+- nested location must start with the outer one: `/health` inside `/api/` -> `location "/health" is outside location "/api/"`. nesting isn't needed here at all
+- who answered 404: html page with `nginx/1.30.5` = nginx itself, plain text from the app = the request reached the backend
+
+### apply the config
+
+- the folder is mounted -> save the file and the container already sees it
+- nginx reads the config only on start and on reload
+- `nginx -t` -> check, `nginx -s reload` -> apply without downtime
+- no restart: with a broken config the container just won't start
+- reload doesn't help when the backend is broken, not nginx
+
+### case 1: 502
+
+- curl -> 502, nginx log: `connect() failed (111: Connection refused) while connecting to upstream, upstream: "http://172.19.0.3:8080/health"`
+- = nginx found api and knocked, but nobody listens there
+- `docker exec case-api netstat -tln` -> `127.0.0.1:8080`
+- `127.0.0.1` = answer only to yourself, `0.0.0.0` = answer to everyone
+- in docker and k8s the app must listen on `0.0.0.0`
+- fix: `listen=0.0.0.0` in api.cfg + `docker restart case-api` (the app reads its config only on start too)
+
+__on interview:__ service is up, curl on the server gives 200, from outside it doesn't open -> `ss -tln`, `127.0.0.1` -> change to `0.0.0.0`. already `0.0.0.0` -> firewall, port publish (`-p`)
+
+### my mistakes
+
+- nested `location /health` inside `/api/` -> config error, and it wasn't needed
+- `location /api/admin/users` instead of `/api/admin/` -> other admin urls still went to api
+- `nginx -s reload` on the 502 -> useless, the problem was in api
+
+### commands
+
+- `docker logs api` - which path reached the app
+- `docker logs proxy` - nginx errors, read the line to the end
+- `docker exec proxy nginx -t` / `docker exec proxy nginx -s reload` - check / apply the config
+- `docker exec case-api netstat -tln` - which address the app listens on (no `ss` in the image)
+- `docker exec case-api wget -qO- 127.0.0.1:8080/health` - not `localhost`, busybox goes to ipv6 `::1`
