@@ -211,3 +211,67 @@ __on interview:__ service is up, curl on the server gives 200, from outside it d
 - `docker exec proxy nginx -t` / `docker exec proxy nginx -s reload` - check / apply the config
 - `docker exec case-api netstat -tln` - which address the app listens on (no `ss` in the image)
 - `docker exec case-api wget -qO- 127.0.0.1:8080/health` - not `localhost`, busybox goes to ipv6 `::1`
+
+## 19 october
+
+k8s: day 15. statefulsets
+
+example
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  clusterIP: None              # headless
+  selector:
+    app: web
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: web             # the headless service above, sts doesn't create it
+  replicas: 3
+  # selector + template same as in a deployment
+  volumeClaimTemplates:        # one pvc per pod: www-web-0, www-web-1, ...
+    - metadata:
+        name: www
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Mi
+```
+
+### headless service
+
+- `clusterIP: None` -> no virtual ip, kube-proxy doesn't touch it, no load balancing
+- dns of the service gives ips of all ready pods, the client picks one
+- every pod gets its own name: `web-0.web` = `<pod>.<service>`
+- no nat -> straight to the pod ip and the port the container listens on
+- clusterIP can't be changed -> normal service to headless = delete and create again
+
+### statefulset
+
+- for apps where pods are not the same: db, kafka. every pod has its own data and role
+- yaml like a deployment + `serviceName` + `volumeClaimTemplates`
+- stable name with a number (`web-0`, not `web-7f9c-x2k`) + dns name. ip is NOT stable
+- own pvc from `volumeClaimTemplates`. pod recreated, even on another node -> same pvc
+- scale down / delete the sts -> pvcs stay, data too
+- starts one by one 0 -> 1 -> 2, each waits for ready of the previous one. down: 2 -> 1 -> 0
+
+### update
+
+- `RollingUpdate` (default): one pod at a time from the biggest number. delete web-2 -> new web-2 -> ready -> web-1
+- no surge like in a deployment: two web-2 can't exist, the pvc is one
+- not Recreate: recreate kills all pods at once, sts has only one pod down
+- `partition: 2` -> only pods with number >= 2 are updated (canary)
+- `OnDelete` -> sts updates nothing, i delete a pod by hand and it comes back new
+- new pod never ready -> rollout stops, rolling back the yaml may not help, delete the broken pod by hand
+
+__on interview:__ why does a statefulset need a headless service? -> every pod gets a stable dns name instead of one shared ip with balancing

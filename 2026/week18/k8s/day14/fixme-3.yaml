@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: counter-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  containers:
+    - name: counter
+      image: busybox:1.38
+      command: ["sh", "-c"]
+      args:
+        - |
+          trap 'exit 0' TERM
+          mkdir -p /var/lib/counter
+          n=$(cat /var/lib/counter/value 2>/dev/null || echo 0)
+          n=$((n + 1))
+          echo $n > /var/lib/counter/value
+          echo "I have been started $n time(s)"
+          while true; do sleep 1; done
+      volumeMounts:
+        - name: counter-data
+          mountPath: /var/lib/counter
+  volumes:
+    - name: counter-data
+      persistentVolumeClaim:
+        claimName: counter-data

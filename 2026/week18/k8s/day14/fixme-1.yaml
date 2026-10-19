@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cache
+spec:
+  containers:
+    - name: cache
+      image: busybox:1.38
+      command:
+        [
+          "sh",
+          "-c",
+          "trap 'exit 0' TERM; echo cache ready; while true; do sleep 1; done",
+        ]
+      volumeMounts:
+        - name: cache-data
+          mountPath: /cache
+  volumes:
+    - name: cache-data
+      persistentVolumeClaim:
+        claimName: cache-data
