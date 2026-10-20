@@ -47,7 +47,8 @@ spec:
                   key: password
           readinessProbe:
             exec:
-              command: ["pg_isready", "-h", "127.0.0.1", "-U", "shop", "-d", "shop"]
+              command:
+                ["pg_isready", "-h", "127.0.0.1", "-U", "shop", "-d", "shop"]
             periodSeconds: 5
           resources:
             requests:
@@ -57,7 +58,7 @@ spec:
               memory: "512Mi"
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql
   volumeClaimTemplates:
     - metadata:
         name: data
