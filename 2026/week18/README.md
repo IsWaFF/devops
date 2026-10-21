@@ -275,3 +275,27 @@ spec:
 - new pod never ready -> rollout stops, rolling back the yaml may not help, delete the broken pod by hand
 
 __on interview:__ why does a statefulset need a headless service? -> every pod gets a stable dns name instead of one shared ip with balancing
+
+## 21 october
+
+### nginx case 2
+
+i learned that nginx can do like that:
+
+```nginx
+server {
+    listen 80;
+    proxy_read_timeout 10s;
+
+    location /api/ {
+        proxy_pass http://case-api:8080/;
+    }
+
+    location /api/v1/report {
+        proxy_read_timeout 30s;
+        proxy_pass http://case-api:8080/v1/report;
+    }
+}
+```
+
+____deafult in proxy_read_timeout is 60s____
