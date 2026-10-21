@@ -299,3 +299,11 @@ server {
 ```
 
 ____deafult in proxy_read_timeout is 60s____
+
+### nginx case 3
+
+; - syntax
+
+`` nginx -s reload ``
+
+nginx -t → reload
