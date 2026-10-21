@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel5
+spec:
+  completions: 5
+  parallelism: 5
+  template:
+    metadata:
+      name: parallel5
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: worker
+          image: busybox:1.38
+          command: ["sh", "-c", "sleep 5"]

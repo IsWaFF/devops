@@ -307,3 +307,69 @@ ____deafult in proxy_read_timeout is 60s____
 `` nginx -s reload ``
 
 nginx -t → reload
+
+### k8s: day 16. jobs, cronjobs, daemonsets
+
+| workload | runs | example |
+| --- | --- | --- |
+| Deployment | N same pods, forever | web, api |
+| StatefulSet | N pods with own name and disk, forever | db, kafka |
+| DaemonSet | one pod on every node, forever | log agent, kube-proxy |
+| Job | pods until the work is done | migration, report |
+| CronJob | a job on a schedule | backup, cleanup |
+
+example
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: report
+spec:
+  backoffLimit: 2              # retries, default 6
+  template:
+    spec:
+      restartPolicy: Never     # only Never or OnFailure
+      containers:
+        - name: report
+          image: busybox:1.38
+          command: ["sh", "-c", "echo 'making the report...'; sleep 5; echo 'report done'"]
+```
+
+#### job
+
+- exit 0 -> job `Complete`, pod stays `Completed`, logs are still there
+- `Never` -> new pod for every retry, `OnFailure` -> container restarts in the same pod
+- retries over `backoffLimit` -> `Failed`, `BackoffLimitExceeded`. waits between retries grow: 10s, 20s...
+- `completions: 6` + `parallelism: 2` -> 6 pods total, max 2 at once. `completionMode: Indexed` -> `$JOB_COMPLETION_INDEX` 0..5
+- `parallel5` (5 at once) -> 9s, one by one would be 5 x (5s + start)
+- `activeDeadlineSeconds` -> max time for the whole job, `ttlSecondsAfterFinished` -> job deletes itself
+- job template can't be changed -> `kubectl delete job` + apply again
+- `kubectl wait --for=condition=Complete job/report --timeout=60s`
+- `kubectl logs job/report` - finds the pod itself
+
+#### cronjob
+
+- cronjob -> job -> pod, `jobTemplate` with a `template` inside
+- `schedule: "0 3 * * *"` - min hour day month weekday, like linux cron
+- no `timeZone` -> time of the control plane, usually utc
+- `concurrencyPolicy`: `Allow` (default) / `Forbid` (skip if the old one runs) / `Replace`
+- `kubectl create job backup-now --from=cronjob/backup` - run it now with the same settings
+- `kubectl patch cronjob backup -p '{"spec":{"suspend":true}}'` - pause without deleting
+
+#### daemonset
+
+- one pod on every node, no `replicas`. new node -> new pod by itself
+- kind: 2 pods on 3 nodes -> control-plane has taint `node-role.kubernetes.io/control-plane:NoSchedule`, needs a toleration
+- kube-proxy and kindnet are daemonsets -> on all 3 nodes
+
+#### Gotchas (fixme)
+
+- `restartPolicy: Always` in a job -> apply fails, `valid values: "OnFailure", "Never"`. a job must end
+- configmap key `data.csv`, script reads `/data/input.csv` -> `can't open`, but job is `Complete` with `imported 0 rows`. key = file name in the volume, read the whole log, not only the status
+
+#### my mistakes
+
+- `command: ["sh", "-c", "sleep", "5"]` -> sh -c takes only the first arg as the script, `5` becomes `$0` -> `sleep` without a number -> `Failed 0/5`. right: `["sh", "-c", "sleep 5"]`
+
+__on interview:__ deployment vs statefulset vs daemonset vs job vs cronjob? -> table above

@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: "* * * * *"           # every minute (cron syntax)
+  timeZone: "Europe/Minsk"
+  concurrencyPolicy: Forbid        # don't start a new run while the old one runs
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:                     # a Job template...
+    spec:
+      template:                    # ...with a Pod template inside (matryoshka!)
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: busybox:1.38
+              command: ["sh", "-c", "echo \"backup at $(date +%H:%M:%S)\""]

@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: report
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: report
+          image: busybox:1.38
+          command: ["sh", "-c", "echo 'making the report...'; sleep 5; echo 'report done'"]

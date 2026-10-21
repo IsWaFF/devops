@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: flaky
+spec:
+  backoffLimit: 2       # retry at most 2 times, then give up
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: flaky
+          image: busybox:1.38
+          command: ["sh", "-c", "echo 'trying...'; exit 1"]
