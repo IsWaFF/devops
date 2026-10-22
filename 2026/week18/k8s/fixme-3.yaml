@@ -24,7 +24,8 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              echo "importing /data/input.csv ..."
+              set -eo pipefail
+              echo "importing /data/data.csv ..."
               rows=$(tail -n +2 /data/data.csv | wc -l)
               echo "imported $rows rows"
           volumeMounts:
