@@ -373,3 +373,29 @@ spec:
 - `command: ["sh", "-c", "sleep", "5"]` -> sh -c takes only the first arg as the script, `5` becomes `$0` -> `sleep` without a number -> `Failed 0/5`. right: `["sh", "-c", "sleep 5"]`
 
 __on interview:__ deployment vs statefulset vs daemonset vs job vs cronjob? -> table above
+
+## 23 october
+
+### k8s: day 17. debugging pods
+
+`get pods -o wide` -> `describe` (events, last state, exit code) -> `logs --previous` -> `exec` / `debug`
+
+| status | look at | lab |
+| --- | --- | --- |
+| Pending | events `FailedScheduling` | 1: nodeSelector `disktype=ssd`, no node has it |
+| InvalidImageName | describe | 2: `Nginx` with a capital letter |
+| ContainerCreating | describe `FailedMount` | 3: configmap for the volume doesn't exist |
+| Running, restarts grow | `Liveness probe failed` | 4: wrong probe path |
+| CrashLoopBackOff | `logs --previous`, exit code | 5: configmap mounted not where the app reads. 7: no env |
+| CreateContainerConfigError | describe | 7: wrong key name in the secret |
+| Running 0/1 | `Readiness probe failed` | 7: wrong probe port |
+| Pending, no events | NODE column | 8: `nodeName` = node that doesn't exist |
+
+- exit 1/2 -> the app itself, 137 -> killed (OOM or liveness), 127 -> no such command, 126 -> not executable
+- readiness `connection refused` -> nobody listens, the process is dead. not the probe's fault
+- readiness only takes the pod out of the service, liveness restarts it
+- `nodeName` skips the scheduler -> no events, pod gets deleted after ~1 min, rs makes a new one
+- `apply` already rolls out if the template changed. `rollout restart` on top = 2 rollouts, stuck pods
+- `exec httpd -f -p 8080 -h /www`: `-f` = foreground (else the container exits), `exec` = httpd is pid 1 and gets SIGTERM, `-h` = root dir
+- `describe pod -l app=x` with 2 pods -> no events, use `kubectl events`
+- secret `type: Opaque` = any keys, no checks (default)

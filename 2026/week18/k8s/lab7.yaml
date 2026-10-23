@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lab7-secret
+type: Opaque
+stringData:
+  api-key: "sk_test_lab7"
+  PAYMENT_URL: swaga
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab7
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab7
+  template:
+    metadata:
+      labels:
+        app: lab7
+    spec:
+      containers:
+        - name: checkout
+          image: busybox:1.38
+          command: ["sh", "-c"]
+          args:
+            - |
+              [ -n "$API_KEY" ] || { echo "FATAL: API_KEY is not set" >&2; exit 1; }
+              [ -n "$PAYMENT_URL" ] || { echo "FATAL: PAYMENT_URL is not set" >&2; exit 1; }
+              mkdir -p /www && echo "checkout OK, payments at $PAYMENT_URL" > /www/index.html
+              echo "listening on :8080"
+              exec httpd -f -p 8080 -h /www
+          env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lab7-secret
+                  key: api-key
+            - name: PAYMENT_URL
+              valueFrom:
+                secretKeyRef:
+                  key: PAYMENT_URL
+                  name: lab7-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab7
+spec:
+  selector:
+    app: lab7
+  ports:
+    - port: 80
+      targetPort: 8080

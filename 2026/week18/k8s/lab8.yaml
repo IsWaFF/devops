@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab8
+  template:
+    metadata:
+      labels:
+        app: lab8
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.38
+          command:
+            [
+              "sh",
+              "-c",
+              "trap 'exit 0' TERM; echo running; while true; do sleep 1; done",
+            ]

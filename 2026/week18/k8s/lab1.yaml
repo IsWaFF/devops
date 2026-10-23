@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lab1
+  template:
+    metadata:
+      labels:
+        app: lab1
+    spec:
+      nodeSelector:
+        disktype: ssd
+      containers:
+        - name: web
+          image: nginx:1.30-alpine

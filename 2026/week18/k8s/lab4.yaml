@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lab4
+spec:
+  containers:
+    - name: podinfo
+      image: ghcr.io/stefanprodan/podinfo:6.15.0
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 9898
+        initialDelaySeconds: 3
+        periodSeconds: 5

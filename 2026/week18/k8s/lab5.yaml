@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lab5-config
+data:
+  app.conf: |
+    greeting=hello from lab5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab5
+  template:
+    metadata:
+      labels:
+        app: lab5
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.38
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "reading /etc/config/app.conf"
+              cat /etc/config/app.conf || { echo "FATAL: cannot read config" >&2; exit 2; }
+              trap 'exit 0' TERM
+              while true; do sleep 1; done
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+      volumes:
+        - name: config
+          configMap:
+            name: lab5-config

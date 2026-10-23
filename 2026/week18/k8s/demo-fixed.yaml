@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+        - name: api
+          image: busybox:1.38
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres-0.postgres:5432/shop"
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "starting shop-api 1.4.2"
+              if [ -z "$DATABASE_URL" ]; then
+                echo "FATAL: DATABASE_URL is not set" >&2
+                exit 1
+              fi
+              echo "connecting to $DATABASE_URL"
+              trap 'exit 0' TERM
+              while true; do sleep 1; done
