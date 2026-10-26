@@ -1,0 +1,10 @@
+# The toolbox Pod of the day: busybox has wget, nc and nslookup.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+spec:
+  containers:
+    - name: client
+      image: busybox:1.38
+      command: ["sh", "-c", "trap 'exit 0' TERM; while true; do sleep 1; done"]

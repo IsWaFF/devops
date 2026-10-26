@@ -1,0 +1,62 @@
+# A backend and a frontend that calls it every 3 seconds.
+# The frontend reads BACKEND_URL from the ConfigMap lab5-config (created by a command in the lab).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab5-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab5-backend
+  template:
+    metadata:
+      labels:
+        app: lab5-backend
+    spec:
+      containers:
+        - name: podinfo
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab5-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab5-frontend
+  template:
+    metadata:
+      labels:
+        app: lab5-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: busybox:1.38
+          envFrom:
+            - configMapRef:
+                name: lab5-config
+          command: ["sh", "-c"]
+          args:
+            - |
+              trap 'exit 0' TERM
+              while true; do
+                if wget -qO /dev/null -T 2 http://lab5; then echo "OK   http://lab5"; fi
+                sleep 3
+              done
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab5
+spec:
+  selector:
+    app: lab5-backend
+  ports:
+    - port: 80
+      targetPort: http

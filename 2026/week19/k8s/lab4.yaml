@@ -1,0 +1,55 @@
+# The team runs two backend parts: the API (answers HTTP) and a queue worker (doesn't).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab4-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lab4-api
+  template:
+    metadata:
+      labels:
+        app: lab4-api
+        tier: backend
+    spec:
+      containers:
+        - name: podinfo
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab4-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lab4-worker
+  template:
+    metadata:
+      labels:
+        app: lab4-worker
+        tier: backend
+    spec:
+      containers:
+        - name: worker
+          image: busybox:1.38
+          command:
+            ["sh", "-c", "trap 'exit 0' TERM; while true; do sleep 1; done"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab4
+spec:
+  selector:
+    tier: backend
+    app: lab4-api
+  ports:
+    - port: 80
+      targetPort: 9898
