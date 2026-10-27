@@ -59,3 +59,31 @@ kubectl exec client -- nslookup kubernetes.default.svc.cluster.local   # Address
 ```
 
 `GOMAXPROCS=12: CPU quota undefined` in the coredns log is not an error, coredns just has no cpu limit
+
+## 27 october
+
+### sadservers
+
+completed ["Bengaluru": Kubernetes StatefulSet least known characteristic](https://sadservers.com/scenario/bengaluru)
+
+main thing i learned: a statefulset never runs two pods with the same name, even if the node is dead
+
+**key fixes and commands:**
+
+- `cat deployment.yaml statefulset.yaml` - same manifests, only `kind` differs. affinity prefers agent-0 (weight 90), tolerations `not-ready`/`unreachable` 30s
+- `docker stop k3d-mycluster-agent-0` - simulate a node crash. ~40s -> node `NotReady`, +30s toleration -> pods `Terminating`
+- `k get pods -o wide -w` - deployment got a new pod on agent-1, `demo-statefulset-0` stuck in `Terminating`
+
+problem: the pod is `Terminating` until the kubelet on its node confirms the container is stopped. the kubelet is dead -> no confirmation. the statefulset needs exactly `demo-statefulset-0` and won't create a second one while the old object exists. k8s can't tell a dead node from a network split, two pods with one identity = split-brain (two postgres primaries on one data)
+
+**answer:**
+
+- `k delete pod demo-statefulset-0 --force` (classic form `--grace-period=0 --force`) -> new `demo-statefulset-0` on agent-1
+- only when you are sure the node is really dead. if it's alive the old pod keeps running -> split-brain
+- don't `k delete node`, the check wants agent-0 `NotReady`
+
+my mistakes:
+
+- didn't wait ~70s after `docker stop`, thought nothing happened
+- `docker kill k3d-mycluster-server-0` by guessing = killed the control plane (apiserver), kubectl -> `connection refused`. fixed with `docker start`
+- `k get deployment/demo` - real name is `demo-deployment`, look at `k get deploy,sts`, not guess
