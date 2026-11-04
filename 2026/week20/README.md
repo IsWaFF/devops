@@ -45,3 +45,41 @@ checked from `client` without any service:
 pod ip is unique in the cluster, except `hostNetwork: true` pods (kube-proxy, kindnet, control plane) - they use the node ip. containers in one pod share one ip
 
 - more control plane nodes is not always better. odd number, 3 or 5, etcd needs quorum. 4 survive losing 1 like 3, 2 survive losing 0
+
+## k8s day 20
+
+what happens on `kubectl apply`, then switched parts off to see what stops
+
+1. kubectl sends https to the apiserver
+2. apiserver: authn -> rbac -> admission -> validation -> etcd -> `created`. kubectl returns here, nothing runs yet
+3. deployment controller makes a replicaset, replicaset controller makes pods with no node
+4. scheduler writes a node into the pod
+5. kubelet sees the pod, asks containerd via cri: sandbox -> cni gives ip -> pull image -> start. then probes, status goes to the apiserver
+6. pod is ready -> its ip goes to the endpointslice -> kube-proxy updates iptables
+
+nobody calls anybody, everyone watches the apiserver. controllers are not created, they always run inside controller-manager and create objects
+
+- sandbox - `pause` process holding the pod's net, ipc and uts namespaces. the ip is its, so a container restart keeps the ip. cni only sets up the network and leaves
+- `kubectl get pods -w` prints a line on every object change, not on every status change, so identical lines are fine
+
+### break-1: `late` 0/2
+
+no pods, no replicaset, no events. deployment is in etcd but nobody executes it
+
+`kubectl -n kube-system get pods` - no controller-manager. it's a static pod, its file was moved from `/etc/kubernetes/manifests` to `/root`. moved it back, kubelet started it, `late` went 2/2 by itself
+
+- no pods and no events -> controller-manager
+- pods `Pending` with no node -> scheduler
+
+### break-2: `lab-worker2` NotReady
+
+kubelet and containerd were stopped. starting only kubelet gives a crash loop, `journalctl -u kubelet` says it can't reach the containerd socket. started containerd, kubelet came up by itself
+
+- after ~40 s node is `NotReady`
+- after ~5 min `podinfo` process is still alive on the node
+- after ~5.5 min pod is evicted, replacement starts on `lab-worker`
+- node came back - kubelet killed the old pod
+
+why 5 min: node gets the `unreachable` taint, pods tolerate it for 300 s, then eviction. replicaset controller makes a new pod, scheduler places it. leaving the endpoints is a separate thing, it happens because the pod is not ready
+
+both `late` pods stayed on `lab-worker`, k8s doesn't rebalance running pods
