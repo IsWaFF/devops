@@ -1,0 +1,10 @@
+[Unit]
+Description=Heartbeat every {{ heartbeat_interval }} seconds
+
+[Timer]
+OnActiveSec=1s
+OnUnitActiveSec={{ heartbeat_interval }}s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=Write a timestamp to the heartbeat log
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'date +%%T >> /var/log/heartbeat.log'

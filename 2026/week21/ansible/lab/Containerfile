@@ -1,0 +1,33 @@
+# «Сервер» для стенда: Ubuntu 24.04 с systemd и sshd, как свежая VPS.
+FROM docker.io/library/ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+# только компонент main: apt update на стенде идёт секунды, а не минуту
+RUN sed -i 's/^Components: .*/Components: main/' /etc/apt/sources.list.d/ubuntu.sources \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      systemd systemd-sysv dbus openssh-server sudo python3 python3-apt \
+      ca-certificates curl iproute2 procps less nano \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ # кеш apt пустой и «старый», как на сервере, где apt update давно не запускали
+ && touch -d '2020-01-01' /var/lib/apt/lists \
+ # только раздел main: apt update качает 5 МБ вместо 50
+ && sed -i 's/^Components: .*/Components: main/' /etc/apt/sources.list.d/ubuntu.sources \
+ # в docker-образе ubuntu сервисам запрещено стартовать после apt install. На сервере так не бывает
+ && rm -f /usr/sbin/policy-rc.d \
+ # лишнее для контейнера
+ && systemctl mask systemd-resolved.service systemd-networkd.service getty.target console-getty.service \
+      systemd-logind.service e2scrub_reap.service apt-daily.timer apt-daily-upgrade.timer
+
+# пользователь, под которым ходит Ansible: вход по ключу, sudo без пароля
+RUN useradd -m -s /bin/bash deploy \
+ && echo 'deploy ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/deploy \
+ && chmod 440 /etc/sudoers.d/deploy \
+ && install -d -m 700 -o deploy -g deploy /home/deploy/.ssh \
+ # рабочая папка модулей Ansible под root. Без неё первый прогон на свежем сервере печатает WARNING
+ && install -d -m 700 /root/.ansible/tmp
+COPY --chown=deploy:deploy --chmod=600 key.pub /home/deploy/.ssh/authorized_keys
+
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]

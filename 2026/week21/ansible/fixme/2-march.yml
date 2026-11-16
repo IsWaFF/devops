@@ -1,0 +1,31 @@
+# Блок 2, «Почини». Плейбук рабочий, но не идемпотентный:
+# второй прогон обязан дать changed=0 и failed=0, а здесь так не выйдет.
+# Что должно остаться на сервере после починки, написано в 2-playbook.md.
+- name: App skeleton
+  hosts: web
+  become: true
+  tasks:
+    - name: Create user for the app
+      ansible.builtin.command: useradd --system --no-create-home app
+
+    - name: Create releases dir
+      ansible.builtin.command: mkdir -p /opt/app/releases
+
+    - name: Mark server as prepared
+      ansible.builtin.file:
+        path: /opt/app/.prepared
+        state: touch
+        mode: "0644"
+
+    - name: Write deploy log
+      ansible.builtin.shell: echo "deployed by ansible" >> /opt/app/deploy.log
+
+    - name: Curl is installed
+      ansible.builtin.apt:
+        name: curl
+        state: latest
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

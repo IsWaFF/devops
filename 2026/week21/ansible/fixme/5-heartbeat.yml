@@ -1,0 +1,10 @@
+# Блок 5, «Почини». Роль heartbeat ставит systemd-таймер,
+# который раз в N секунд дописывает время в /var/log/heartbeat.log.
+# В роли три ошибки. Этот файл править не нужно, чинить надо в roles/heartbeat.
+- name: Heartbeat
+  hosts: lb
+  become: true
+  vars:
+    heartbeat_interval: 10
+  roles:
+    - heartbeat
