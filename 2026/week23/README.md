@@ -13,3 +13,11 @@ interview prep for terraform and terragrunt
 to review: `terraform import`, implicit dependencies from references, `terraform apply first.tfplan`, and passing outputs between terragrunt units with `dependency`.
 
 prepared a short intro in russian and english and went over the shorty release flow. github actions builds and publishes the image, then i update the deployment and check the rollout manually.
+
+# 25.11
+
+today was tecnical interview
+
+and...                  i completed it !!!
+
+happy end.
